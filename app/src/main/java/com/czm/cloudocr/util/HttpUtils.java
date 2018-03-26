@@ -1,4 +1,4 @@
-package com.czm.cloudocr.Util;
+package com.czm.cloudocr.util;
 
 import java.io.IOException;
 

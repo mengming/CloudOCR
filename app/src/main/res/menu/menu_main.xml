@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navigation_pic"
+        android:icon="@android:drawable/btn_star"
+        android:title="相册" />
+
+    <item
+        android:id="@+id/navigation_message"
+        android:icon="@android:drawable/sym_action_chat"
+        android:title="信息" />
+    <item
+        android:id="@+id/navigation_call"
+        android:icon="@android:drawable/sym_action_call"
+        android:title="电话" />
+
+</menu>
