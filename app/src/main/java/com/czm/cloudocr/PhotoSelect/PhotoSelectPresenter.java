@@ -21,6 +21,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
+
 /**
  * Created by Phelps on 2018/3/25.
  */
@@ -103,14 +104,4 @@ public class PhotoSelectPresenter implements PhotoSelectContract.Presenter {
         mPhotoSelectView.changeDirectory(mPhotos.getGruopMap().get(key));
     }
 
-    @Override
-    public void subscribe() {
-        loadPhotos();
-    }
-
-    @Override
-    public void unSubscribe() {
-        mGruopMap = new HashMap<>();
-        dirs = new ArrayList<>();
-    }
 }

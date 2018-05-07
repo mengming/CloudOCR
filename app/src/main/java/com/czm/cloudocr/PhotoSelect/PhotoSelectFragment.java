@@ -51,7 +51,7 @@ public class PhotoSelectFragment extends Fragment implements PhotoSelectContract
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 3);
-        mDirAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, mDirs);
+        mDirAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, mDirs);
         mSpinner.setAdapter(mDirAdapter);
         mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -89,18 +89,8 @@ public class PhotoSelectFragment extends Fragment implements PhotoSelectContract
         mPhotoAdapter = new PhotoAdapter(getContext(), mUrls);
         mRecyclerView.setAdapter(mPhotoAdapter);
         super.onActivityCreated(savedInstanceState);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        mPresenter.subscribe();
-    }
-
-    @Override
-    public void onPause() {
-        mPresenter.unSubscribe();
-        super.onPause();
+        new PhotoSelectPresenter(getContext(),this);
+        mPresenter.loadPhotos();
     }
 
     @Override

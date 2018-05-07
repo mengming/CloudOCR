@@ -80,13 +80,4 @@ public class PhotoHandlePresenter implements PhotoHandleContract.Presenter {
 //        mPhotoHandleView.showText(result);
     }
 
-    @Override
-    public void subscribe() {
-
-    }
-
-    @Override
-    public void unSubscribe() {
-
-    }
 }

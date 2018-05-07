@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.czm.cloudocr.R;
 import com.czm.cloudocr.model.PhotoResult;
+import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.io.File;
 
@@ -32,8 +33,8 @@ public class PhotoHandleActivity extends AppCompatActivity implements View.OnCli
         mContentView = findViewById(R.id.handle_iv);
         new PhotoHandlePresenter(this, this);
         Log.d("pha", "uri = " + getIntent().getStringExtra("photo"));
-        imgUri = Uri.fromFile(new File(getIntent().getStringExtra("photo")));
-        showImage(Uri.parse(getIntent().getStringExtra("photo")));
+        imgUri = Uri.parse(getIntent().getStringExtra("photo"));
+        showImage(imgUri);
         Button btnCrop = findViewById(R.id.handle_crop_btn);
         btnCrop.setOnClickListener(this);
         Button btnBack = findViewById(R.id.handle_back_btn);
@@ -42,19 +43,19 @@ public class PhotoHandleActivity extends AppCompatActivity implements View.OnCli
         btnOcr.setOnClickListener(this);
     }
 
-//    @Override
-//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
-//            CropImage.ActivityResult result = CropImage.getActivityResult(data);
-//            if (resultCode == RESULT_OK) {
-//                imgUri = result.getUri();
-//                showImage(imgUri);
-//                Log.d("pha", "crop_uri = " + imgUri.toString());
-//            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
-//                Exception error = result.getError();
-//            }
-//        }
-//    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if (resultCode == RESULT_OK) {
+                imgUri = result.getUri();
+                showImage(imgUri);
+                Log.d("pha", "crop_uri = " + imgUri.toString());
+            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                Exception error = result.getError();
+            }
+        }
+    }
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
@@ -75,8 +76,8 @@ public class PhotoHandleActivity extends AppCompatActivity implements View.OnCli
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.handle_crop_btn :
-//                CropImage.activity(imgUri)
-//                        .start(PhotoHandleActivity.this);
+                CropImage.activity(imgUri)
+                        .start(PhotoHandleActivity.this);
                 break;
             case R.id.handle_back_btn :
                 finish();
@@ -101,7 +102,6 @@ public class PhotoHandleActivity extends AppCompatActivity implements View.OnCli
 //        intent.putExtra("text", result.getText());
 //        startActivity(intent);
     }
-
 
     @Override
     public void setPresenter(PhotoHandleContract.Presenter presenter) {

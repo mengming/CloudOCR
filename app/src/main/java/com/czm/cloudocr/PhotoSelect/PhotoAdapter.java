@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,6 +62,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.ImageViewHol
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, PhotoHandleActivity.class);
+                Log.d("pha", "uri = "+mUrls.get(position));
                 intent.putExtra("photo", Uri.fromFile(new File(mUrls.get(position))).toString());
                 mContext.startActivity(intent);
             }

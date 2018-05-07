@@ -1,10 +1,8 @@
 package com.czm.cloudocr.PhotoSelect;
 
-import com.czm.cloudocr.BasePresenter;
 import com.czm.cloudocr.BaseView;
 import com.czm.cloudocr.model.Photos;
 
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -17,7 +15,7 @@ public interface PhotoSelectContract {
         void changeDirectory(List<String> urls);
     }
 
-    interface Presenter extends BasePresenter{
+    interface Presenter{
         void loadPhotos();
         void getPhotos(String key);
     }

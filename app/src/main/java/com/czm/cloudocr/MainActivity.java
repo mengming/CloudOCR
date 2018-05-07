@@ -17,6 +17,7 @@ import android.support.v4.content.FileProvider;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.czm.cloudocr.PhotoHandle.PhotoHandleActivity;
@@ -50,7 +51,6 @@ public class MainActivity extends AppCompatActivity {
         mFragments = new ArrayList<>();
         PhotoSelectFragment photoSelectFragment = new PhotoSelectFragment();
         mFragments.add(photoSelectFragment);
-        mPhotoSelectPresenter = new PhotoSelectPresenter(this,photoSelectFragment);
         final FragmentPagerAdapter mAdapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
             @Override
             public Fragment getItem(int position) {
@@ -92,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
             case TAKE_PHOTO :
                 if (resultCode == RESULT_OK) {
                     Intent intent = new Intent(MainActivity.this, PhotoHandleActivity.class);
+                    Log.d("pha", "uri = "+imageUri);
                     intent.putExtra("photo", imageUri.toString());
                     startActivity(intent);
                 }

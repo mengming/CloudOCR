@@ -2,7 +2,6 @@ package com.czm.cloudocr.PhotoHandle;
 
 import android.net.Uri;
 
-import com.czm.cloudocr.BasePresenter;
 import com.czm.cloudocr.BaseView;
 import com.czm.cloudocr.model.PhotoResult;
 
@@ -15,7 +14,7 @@ public interface PhotoHandleContract {
         void showText(PhotoResult result);
     }
 
-    interface Presenter extends BasePresenter{
+    interface Presenter{
         void compressPic(Uri uri);
         void sendPic(File file) throws IOException;
         void savePic(PhotoResult result);
