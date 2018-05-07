@@ -2,8 +2,10 @@ package com.czm.cloudocr;
 
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
@@ -11,11 +13,13 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.FileProvider;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 
+import com.czm.cloudocr.PhotoHandle.PhotoHandleActivity;
 import com.czm.cloudocr.PhotoSelect.PhotoSelectPresenter;
 import com.czm.cloudocr.PhotoSelect.PhotoSelectFragment;
 
@@ -29,13 +33,13 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
 
     private BottomNavigationView mBottomNavigationView;
-    private HashMap<String, List<String>> mGruopMap = new HashMap<String, List<String>>();
-    private long startTime, endTime;
-    private final static int SCAN_OK = 1;
     private ViewPager mViewPager;
     private ArrayList<Fragment> mFragments;
-    private ArrayList<String> urls = new ArrayList<>();
     private PhotoSelectPresenter mPhotoSelectPresenter;
+
+    private Uri imageUri;
+
+    public static final int TAKE_PHOTO = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,10 +73,11 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.navigation_pic:
                         mViewPager.setCurrentItem(0);
                         return true;
-                    case R.id.navigation_call:
+                    case R.id.navigation_camera:
+                        takePhoto();
 //                        mViewPager.setCurrentItem(1);
                         return true;
-                    case R.id.navigation_message:
+                    case R.id.navigation_call:
 //                        mViewPager.setCurrentItem(2);
                         return true;
                 }
@@ -81,5 +86,31 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case TAKE_PHOTO :
+                if (resultCode == RESULT_OK) {
+                    Intent intent = new Intent(MainActivity.this, PhotoHandleActivity.class);
+                    intent.putExtra("photo", imageUri.toString());
+                    startActivity(intent);
+                }
+                break;
+        }
+    }
+
+    private void takePhoto(){
+        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
+                + "/test/" + System.currentTimeMillis() + ".jpg");
+        file.getParentFile().mkdirs();
+        imageUri = FileProvider.getUriForFile(MainActivity.this,
+                "com.czm.cloudocr.provider", file);
+
+        //启动相机程序
+        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        startActivityForResult(intent, TAKE_PHOTO);
+    }
 
 }
