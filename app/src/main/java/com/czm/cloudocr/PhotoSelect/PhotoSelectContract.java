@@ -2,6 +2,7 @@ package com.czm.cloudocr.PhotoSelect;
 
 import com.czm.cloudocr.BasePresenter;
 import com.czm.cloudocr.BaseView;
+import com.czm.cloudocr.model.Photos;
 
 import java.util.HashMap;
 import java.util.List;
@@ -12,10 +13,12 @@ import java.util.List;
 
 public interface PhotoSelectContract {
     interface View extends BaseView<Presenter>{
-        void showPhotos(HashMap<String, List<String>> map);
+        void showPhotos(Photos photos);
+        void changeDirectory(List<String> urls);
     }
 
     interface Presenter extends BasePresenter{
         void loadPhotos();
+        void getPhotos(String key);
     }
 }
