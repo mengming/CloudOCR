@@ -11,6 +11,8 @@ import com.czm.cloudocr.model.PhotoResult;
 import com.czm.cloudocr.util.HttpUtils;
 import com.czm.cloudocr.util.SystemUtils;
 
+import org.litepal.crud.DataSupport;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -38,22 +40,20 @@ public class PhotoHandlePresenter implements PhotoHandleContract.Presenter {
 
     @Override
     public void compressPic(Uri uri) {
-//        try {
-//            InputStream is = mContext.getContentResolver().openInputStream(uri);
-//            Bitmap bitmap = BitmapFactory.decodeStream(is);
-//            File file = new File(Environment.getExternalStorageDirectory(),
-//                    "account" + RealmOperationHelper.getInstance(MyApp.REALM_INSTANCE).queryAll(PhotoResult.class).size() + ".jpg");
-//            FileOutputStream out = new FileOutputStream(file);
-//            Bitmap mBitmap = SystemUtils.compressImage(bitmap);
-//            mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
-//            savePic(new PhotoResult(file.toURI().toString(), "识别后的文字"));
-//            Log.d("php", "compressPic: " + file.length()/1024 + "kb");
-////            sendPic(file);
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            InputStream is = mContext.getContentResolver().openInputStream(uri);
+            Bitmap bitmap = BitmapFactory.decodeStream(is);
+            File file = new File(mContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES),
+                    "account" + DataSupport.count(PhotoResult.class) + ".jpg");
+            Log.d("php", "compressPic: uri=" + file.toURI().toString());
+            Bitmap mBitmap = SystemUtils.compressImage(bitmap, file);
+            savePic(new PhotoResult(file.toURI().toString(), "识别后的文字"));
+            Log.d("php", "compress:" + DataSupport.count(PhotoResult.class));
+            Log.d("php", "compressPic: " + file.length()/1024 + "kb");
+//            sendPic(file);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -76,8 +76,8 @@ public class PhotoHandlePresenter implements PhotoHandleContract.Presenter {
 
     @Override
     public void savePic(PhotoResult result) {
-//        RealmOperationHelper.getInstance(MyApp.REALM_INSTANCE).add(result);
-//        mPhotoHandleView.showText(result);
+        result.saveThrows();
+        mPhotoHandleView.showText(result);
     }
 
 }

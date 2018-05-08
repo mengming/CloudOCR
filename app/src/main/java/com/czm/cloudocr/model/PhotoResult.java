@@ -1,8 +1,22 @@
 package com.czm.cloudocr.model;
 
-public class PhotoResult{
+import org.litepal.crud.DataSupport;
+
+import java.io.Serializable;
+
+public class PhotoResult extends DataSupport implements Serializable{
+    private int id;
     private String uri;
     private String text;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
 
     /**
      *

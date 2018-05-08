@@ -36,7 +36,6 @@ public class MainActivity extends AppCompatActivity {
     private BottomNavigationView mBottomNavigationView;
     private ViewPager mViewPager;
     private ArrayList<Fragment> mFragments;
-    private PhotoSelectPresenter mPhotoSelectPresenter;
 
     private Uri imageUri;
 

@@ -13,6 +13,7 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.czm.cloudocr.R;
+import com.czm.cloudocr.TextResult.TextResultActivity;
 import com.czm.cloudocr.model.PhotoResult;
 import com.theartofdev.edmodo.cropper.CropImage;
 
@@ -97,10 +98,9 @@ public class PhotoHandleActivity extends AppCompatActivity implements View.OnCli
 
     @Override
     public void showText(PhotoResult result) {
-//        Intent intent = new Intent(this, TextResultActivity.class);
-//        intent.putExtra("uri", result.getUri());
-//        intent.putExtra("text", result.getText());
-//        startActivity(intent);
+        Intent intent = new Intent(this, TextResultActivity.class);
+        intent.putExtra("photo_result", result);
+        startActivity(intent);
     }
 
     @Override

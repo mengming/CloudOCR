@@ -7,10 +7,10 @@
 
     <item
         android:id="@+id/navigation_camera"
-        android:icon="@android:drawable/sym_action_chat"
+        android:icon="@android:drawable/ic_menu_camera"
         android:title="拍照" />
     <item
-        android:id="@+id/navigation_call"
+        android:id="@+id/navigation_history"
         android:icon="@android:drawable/sym_action_call"
         android:title="电话" />
 </menu>
