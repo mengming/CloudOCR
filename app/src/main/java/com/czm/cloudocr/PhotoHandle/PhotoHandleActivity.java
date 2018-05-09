@@ -42,6 +42,8 @@ public class PhotoHandleActivity extends AppCompatActivity implements View.OnCli
         btnBack.setOnClickListener(this);
         Button btnOcr = findViewById(R.id.handle_ocr_btn);
         btnOcr.setOnClickListener(this);
+        Button btnPdf = findViewById(R.id.handle_pdf_btn);
+        btnPdf.setOnClickListener(this);
     }
 
     @Override
@@ -85,6 +87,9 @@ public class PhotoHandleActivity extends AppCompatActivity implements View.OnCli
                 break;
             case R.id.handle_ocr_btn :
                 mPresenter.compressPic(imgUri);
+                break;
+            case R.id.handle_pdf_btn :
+                mPresenter.savePdf(imgUri);
                 break;
         }
     }

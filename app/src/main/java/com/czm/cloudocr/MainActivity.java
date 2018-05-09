@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
                         takePhoto();
 //                        mViewPager.setCurrentItem(1);
                         return true;
-                    case R.id.navigation_call:
+                    case R.id.navigation_history:
 //                        mViewPager.setCurrentItem(2);
                         return true;
                 }

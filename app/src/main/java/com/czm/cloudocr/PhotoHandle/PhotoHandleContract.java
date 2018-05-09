@@ -18,5 +18,6 @@ public interface PhotoHandleContract {
         void compressPic(Uri uri);
         void sendPic(File file) throws IOException;
         void savePic(PhotoResult result);
+        void savePdf(Uri uri);
     }
 }

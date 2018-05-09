@@ -9,7 +9,13 @@ import android.util.Log;
 
 import com.czm.cloudocr.model.PhotoResult;
 import com.czm.cloudocr.util.HttpUtils;
+import com.czm.cloudocr.util.PdfBackground;
 import com.czm.cloudocr.util.SystemUtils;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.pdf.PdfWriter;
 
 import org.litepal.crud.DataSupport;
 
@@ -19,6 +25,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -31,6 +38,7 @@ public class PhotoHandlePresenter implements PhotoHandleContract.Presenter {
 
     private PhotoHandleContract.View mPhotoHandleView;
     private Context mContext;
+    public static final int BORDER_WIDTH = 10;
 
     public PhotoHandlePresenter(PhotoHandleContract.View photoHandleView, Context context) {
         mPhotoHandleView = photoHandleView;
@@ -78,6 +86,44 @@ public class PhotoHandlePresenter implements PhotoHandleContract.Presenter {
     public void savePic(PhotoResult result) {
         result.saveThrows();
         mPhotoHandleView.showText(result);
+    }
+
+    @Override
+    public void savePdf(Uri uri) {
+        try {
+            createPdf(mContext.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)+"test.pdf", uri.getPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 根据图片生成PDF
+     *
+     * @param pdfPath 生成的PDF文件的路径
+     * @param imagePath 待生成PDF文件的图片集合
+     * @throws IOException 可能出现的IO操作异常
+     * @throws DocumentException PDF生成异常
+     */
+    private void createPdf(String pdfPath, String imagePath) throws IOException, DocumentException {
+        Document document = new Document();
+        PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(pdfPath));
+
+        //设置pdf背景
+        PdfBackground event = new PdfBackground();
+        writer.setPageEvent(event);
+
+        document.open();
+        document.newPage();
+        Image img = Image.getInstance(imagePath);
+        //设置图片缩放到A4纸的大小
+        img.scaleToFit(PageSize.A4.getWidth() - BORDER_WIDTH * 2, PageSize.A4.getHeight() - BORDER_WIDTH * 2);
+        //设置图片的显示位置（居中）
+        img.setAbsolutePosition((PageSize.A4.getWidth() - img.getScaledWidth()) / 2, (PageSize.A4.getHeight() - img.getScaledHeight()) / 2);
+        document.add(img);
+        document.close();
     }
 
 }

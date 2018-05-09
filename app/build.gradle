@@ -37,4 +37,5 @@ dependencies {
     compile ('org.litepal.android:core:1.6.1'){
         exclude group: "com.android.support"
     }
+    compile "com.itextpdf:itextg:5.5.9"
 }

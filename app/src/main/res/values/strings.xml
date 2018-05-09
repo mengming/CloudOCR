@@ -3,4 +3,5 @@
     <string name="handle_crop">剪裁</string>
     <string name="handle_ocr">文字识别</string>
     <string name="proofread">校对</string>
+    <string name="handle_pdf">pdf转换</string>
 </resources>
