@@ -4,4 +4,6 @@
     <string name="handle_ocr">文字识别</string>
     <string name="proofread">校对</string>
     <string name="handle_pdf">pdf转换</string>
+    <string name="settings">设置</string>
+
 </resources>

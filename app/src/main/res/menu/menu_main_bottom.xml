@@ -2,15 +2,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/navigation_pic"
-        android:icon="@android:drawable/btn_star"
+        android:icon="@drawable/ic_album"
         android:title="相册" />
 
     <item
         android:id="@+id/navigation_camera"
-        android:icon="@android:drawable/ic_menu_camera"
+        android:icon="@drawable/ic_camera"
         android:title="拍照" />
     <item
         android:id="@+id/navigation_history"
-        android:icon="@android:drawable/sym_action_call"
-        android:title="电话" />
+        android:icon="@drawable/ic_history"
+        android:title="历史" />
 </menu>

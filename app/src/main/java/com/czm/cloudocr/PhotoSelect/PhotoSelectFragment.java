@@ -1,6 +1,9 @@
 package com.czm.cloudocr.PhotoSelect;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
 import com.bumptech.glide.Glide;
+import com.czm.cloudocr.MainActivity;
 import com.czm.cloudocr.R;
 import com.czm.cloudocr.model.Photos;
 
@@ -29,21 +33,16 @@ import java.util.List;
 public class PhotoSelectFragment extends Fragment implements PhotoSelectContract.View{
 
     private RecyclerView mRecyclerView;
-    private AppCompatSpinner mSpinner;
-    private PhotoSelectContract.Presenter mPresenter;
+    public static PhotoSelectContract.Presenter mPresenter;
     private List<String> mUrls = new ArrayList<>();
-    private List<String> mDirs = new ArrayList<>();
     private PhotoAdapter mPhotoAdapter;
-    private ArrayAdapter<String> mDirAdapter;
     private boolean sIsScrolling;
+    private Handler mHandler;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_picture, container, false);
-        Toolbar toolbar = view.findViewById(R.id.main_toolbar);
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-        mSpinner = view.findViewById(R.id.main_spinner);
         mRecyclerView = view.findViewById(R.id.pic_recycler);
         return view;
     }
@@ -51,19 +50,7 @@ public class PhotoSelectFragment extends Fragment implements PhotoSelectContract
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 3);
-        mDirAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, mDirs);
-        mSpinner.setAdapter(mDirAdapter);
-        mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                mPresenter.getPhotos(mDirs.get(position));
-            }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -89,8 +76,17 @@ public class PhotoSelectFragment extends Fragment implements PhotoSelectContract
         mPhotoAdapter = new PhotoAdapter(getContext(), mUrls);
         mRecyclerView.setAdapter(mPhotoAdapter);
         super.onActivityCreated(savedInstanceState);
+
         new PhotoSelectPresenter(getContext(),this);
         mPresenter.loadPhotos();
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof MainActivity) {
+            mHandler = ((MainActivity) context).mHandler;
+        }
     }
 
     @Override
@@ -100,9 +96,11 @@ public class PhotoSelectFragment extends Fragment implements PhotoSelectContract
 
     @Override
     public void showPhotos(Photos photos) {
-        mDirs.clear();
-        mDirs.addAll(photos.getUrls());
-        mDirAdapter.notifyDataSetChanged();
+        Message message = new Message();
+        Bundle bundle = new Bundle();
+        bundle.putStringArrayList("urls", photos.getUrls());
+        message.setData(bundle);
+        mHandler.sendMessage(message);
         mUrls.clear();
         mUrls.addAll(photos.getGruopMap().get(photos.getUrls().get(0)));
         mPhotoAdapter.notifyDataSetChanged();
@@ -114,4 +112,5 @@ public class PhotoSelectFragment extends Fragment implements PhotoSelectContract
         mUrls.addAll(urls);
         mPhotoAdapter.notifyDataSetChanged();
     }
+
 }

@@ -1,9 +1,6 @@
 package com.czm.cloudocr;
 
-import android.app.ProgressDialog;
-import android.content.ContentResolver;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.Handler;
@@ -14,42 +11,67 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.FileProvider;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.AppCompatSpinner;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 
+import com.czm.cloudocr.OcrHistory.OcrHistoryFragment;
 import com.czm.cloudocr.PhotoHandle.PhotoHandleActivity;
-import com.czm.cloudocr.PhotoSelect.PhotoSelectPresenter;
 import com.czm.cloudocr.PhotoSelect.PhotoSelectFragment;
+import com.czm.cloudocr.widget.MyViewPager;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
     private BottomNavigationView mBottomNavigationView;
-    private ViewPager mViewPager;
-    private ArrayList<Fragment> mFragments;
+    private MyViewPager mViewPager;
+    private AppCompatSpinner mSpinner;
 
+    private ArrayList<Fragment> mFragments;
+    private List<String> mDirs = new ArrayList<>();
+    private ArrayAdapter<String> mDirAdapter;
     private Uri imageUri;
 
     public static final int TAKE_PHOTO = 1;
+    private int lastFragmentIndex = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Toolbar toolbar = findViewById(R.id.main_toolbar);
+        setSupportActionBar(toolbar);
+        mSpinner = findViewById(R.id.main_spinner);
+        mDirAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, mDirs);
+        mSpinner.setAdapter(mDirAdapter);
+        mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                PhotoSelectFragment.mPresenter.getPhotos(mDirs.get(position));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
         mViewPager = findViewById(R.id.main_viewpager);
         mFragments = new ArrayList<>();
         PhotoSelectFragment photoSelectFragment = new PhotoSelectFragment();
+        OcrHistoryFragment ocrHistoryFragment = new OcrHistoryFragment();
         mFragments.add(photoSelectFragment);
+        mFragments.add(ocrHistoryFragment);
         final FragmentPagerAdapter mAdapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
             @Override
             public Fragment getItem(int position) {
@@ -62,7 +84,6 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         mViewPager.setAdapter(mAdapter);
-        mViewPager.setOffscreenPageLimit(2);
 
         mBottomNavigationView = findViewById(R.id.main_bottom);
         mBottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -70,19 +91,35 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.navigation_pic:
+                        mSpinner.setVisibility(View.VISIBLE);
                         mViewPager.setCurrentItem(0);
                         return true;
                     case R.id.navigation_camera:
                         takePhoto();
-//                        mViewPager.setCurrentItem(1);
                         return true;
                     case R.id.navigation_history:
-//                        mViewPager.setCurrentItem(2);
+                        mSpinner.setVisibility(View.INVISIBLE);
+                        mViewPager.setCurrentItem(1);
                         return true;
                 }
                 return false;
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mViewPager.setCurrentItem(lastFragmentIndex);
+        mBottomNavigationView.setSelectedItemId(lastFragmentIndex == 0 ? 0 : 2);
+        Log.d("main", "main: resume = " + mViewPager.getCurrentItem());
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        lastFragmentIndex = mViewPager.getCurrentItem();
+        Log.d("main", "main:  = " + mViewPager.getCurrentItem());
     }
 
     @Override
@@ -112,5 +149,17 @@ public class MainActivity extends AppCompatActivity {
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         startActivityForResult(intent, TAKE_PHOTO);
     }
+
+    public Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            mDirs.clear();
+            ArrayList<String> list = msg.getData().getStringArrayList("urls");
+            mDirs.addAll(list);
+            mDirAdapter.notifyDataSetChanged();
+        }
+    };
+
+
 
 }
