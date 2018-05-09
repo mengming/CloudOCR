@@ -48,6 +48,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.ImageViewHol
 
     @Override
     public void onBindViewHolder(@NonNull ImageViewHolder holder, final int position) {
+        Log.d("pha", "onBindViewHolder: photo");
         DisplayMetrics outMetrics = mContext.getApplicationContext().getResources().getDisplayMetrics();
         int width = (outMetrics.widthPixels - dip2px(mContext,64))/3;
 

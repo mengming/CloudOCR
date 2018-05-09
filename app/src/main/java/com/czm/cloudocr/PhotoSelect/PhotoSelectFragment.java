@@ -50,7 +50,6 @@ public class PhotoSelectFragment extends Fragment implements PhotoSelectContract
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 3);
-
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -62,7 +61,6 @@ public class PhotoSelectFragment extends Fragment implements PhotoSelectContract
                 } else if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     if (sIsScrolling) {
                         Glide.with(getActivity()).resumeRequests();
-
                     }
                     sIsScrolling = false;
                 }

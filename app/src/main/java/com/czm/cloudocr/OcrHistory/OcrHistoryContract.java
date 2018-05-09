@@ -1,5 +1,7 @@
 package com.czm.cloudocr.OcrHistory;
 
+import android.os.Handler;
+
 import com.czm.cloudocr.BaseView;
 import com.czm.cloudocr.model.PhotoResult;
 
@@ -10,6 +12,6 @@ public interface OcrHistoryContract {
         void showHistory(List<PhotoResult> results);
     }
     interface Presenter{
-        void loadHistory();
+        void loadHistory(Handler handler);
     }
 }

@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         mViewPager.setCurrentItem(lastFragmentIndex);
-        mBottomNavigationView.setSelectedItemId(lastFragmentIndex == 0 ? 0 : 2);
+        mBottomNavigationView.setSelectedItemId(lastFragmentIndex == 0 ? R.id.navigation_pic : R.id.navigation_history);
         Log.d("main", "main: resume = " + mViewPager.getCurrentItem());
     }
 
