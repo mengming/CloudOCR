@@ -52,6 +52,11 @@ public class OcrHistoryFragment extends Fragment implements OcrHistoryContract.V
         mRecyclerView.setAdapter(mOcrHistoryAdapter);
 
         new OcrHistoryPresenter(getContext(), this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         mPresenter.loadHistory(mHandler);
     }
 

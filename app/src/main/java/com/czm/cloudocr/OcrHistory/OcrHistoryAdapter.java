@@ -1,9 +1,9 @@
 package com.czm.cloudocr.OcrHistory;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.czm.cloudocr.R;
+import com.czm.cloudocr.TextResult.TextResultActivity;
 import com.czm.cloudocr.model.PhotoResult;
 
 import java.util.List;
@@ -34,12 +35,20 @@ public class OcrHistoryAdapter extends RecyclerView.Adapter<OcrHistoryAdapter.Hi
     }
 
     @Override
-    public void onBindViewHolder(@NonNull HistoryViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull HistoryViewHolder holder, final int position) {
         PhotoResult result = mResults.get(position);
         Glide.with(mContext)
                 .load(result.getUri())
                 .into(holder.mImageView);
         holder.mTextView.setText(result.getText());
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, TextResultActivity.class);
+                intent.putExtra("photo_result", mResults.get(position));
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     @Override

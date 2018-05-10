@@ -31,6 +31,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static final String TAG = "OCR";
     private BottomNavigationView mBottomNavigationView;
     private MyViewPager mViewPager;
     private AppCompatSpinner mSpinner;

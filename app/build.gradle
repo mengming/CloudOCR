@@ -37,4 +37,5 @@ dependencies {
         exclude group: "com.android.support"
     }
     compile "com.itextpdf:itextg:5.5.9"
+    implementation 'com.yanzhenjie:permission:2.0.0-rc4'
 }
