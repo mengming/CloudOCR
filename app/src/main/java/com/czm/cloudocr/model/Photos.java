@@ -9,7 +9,7 @@ import java.util.List;
  * Created by Phelps on 2018/3/26.
  */
 
-public class Photos{
+public class Photos implements Serializable{
     private HashMap<String, List<String>> mGruopMap;
     private ArrayList<String> urls;
 

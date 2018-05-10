@@ -15,7 +15,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -44,6 +43,17 @@ public class MainActivity extends AppCompatActivity {
     public static final int TAKE_PHOTO = 1;
     private int lastFragmentIndex = 0;
 
+    public Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            mDirs.clear();
+            ArrayList<String> list = msg.getData().getStringArrayList("urls");
+            mDirs.addAll(list);
+            mDirAdapter.notifyDataSetChanged();
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,10 +78,8 @@ public class MainActivity extends AppCompatActivity {
 
         mViewPager = findViewById(R.id.main_viewpager);
         mFragments = new ArrayList<>();
-        PhotoSelectFragment photoSelectFragment = new PhotoSelectFragment();
-        OcrHistoryFragment ocrHistoryFragment = new OcrHistoryFragment();
-        mFragments.add(photoSelectFragment);
-        mFragments.add(ocrHistoryFragment);
+        mFragments.add(new PhotoSelectFragment());
+        mFragments.add(new OcrHistoryFragment());
         final FragmentPagerAdapter mAdapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
             @Override
             public Fragment getItem(int position) {
@@ -112,14 +120,12 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         mViewPager.setCurrentItem(lastFragmentIndex);
         mBottomNavigationView.setSelectedItemId(lastFragmentIndex == 0 ? R.id.navigation_pic : R.id.navigation_history);
-        Log.d("main", "main: resume = " + mViewPager.getCurrentItem());
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         lastFragmentIndex = mViewPager.getCurrentItem();
-        Log.d("main", "main:  = " + mViewPager.getCurrentItem());
     }
 
     @Override
@@ -128,7 +134,6 @@ public class MainActivity extends AppCompatActivity {
             case TAKE_PHOTO :
                 if (resultCode == RESULT_OK) {
                     Intent intent = new Intent(MainActivity.this, PhotoHandleActivity.class);
-                    Log.d("pha", "uri = "+imageUri);
                     intent.putExtra("photo", imageUri.toString());
                     startActivity(intent);
                 }
@@ -149,17 +154,6 @@ public class MainActivity extends AppCompatActivity {
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         startActivityForResult(intent, TAKE_PHOTO);
     }
-
-    public Handler mHandler = new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            mDirs.clear();
-            ArrayList<String> list = msg.getData().getStringArrayList("urls");
-            mDirs.addAll(list);
-            mDirAdapter.notifyDataSetChanged();
-        }
-    };
-
 
 
 }

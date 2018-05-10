@@ -35,7 +35,6 @@ public class OcrHistoryAdapter extends RecyclerView.Adapter<OcrHistoryAdapter.Hi
 
     @Override
     public void onBindViewHolder(@NonNull HistoryViewHolder holder, int position) {
-        Log.d("oha", "onBindViewHolder: "+position);
         PhotoResult result = mResults.get(position);
         Glide.with(mContext)
                 .load(result.getUri())
@@ -45,7 +44,6 @@ public class OcrHistoryAdapter extends RecyclerView.Adapter<OcrHistoryAdapter.Hi
 
     @Override
     public int getItemCount() {
-        Log.d("oha", "getItemCount: ");
         return mResults.size();
     }
 

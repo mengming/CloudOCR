@@ -48,7 +48,6 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.ImageViewHol
 
     @Override
     public void onBindViewHolder(@NonNull ImageViewHolder holder, final int position) {
-        Log.d("pha", "onBindViewHolder: photo");
         DisplayMetrics outMetrics = mContext.getApplicationContext().getResources().getDisplayMetrics();
         int width = (outMetrics.widthPixels - dip2px(mContext,64))/3;
 
@@ -63,7 +62,6 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.ImageViewHol
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, PhotoHandleActivity.class);
-                Log.d("pha", "uri = "+mUrls.get(position));
                 intent.putExtra("photo", Uri.fromFile(new File(mUrls.get(position))).toString());
                 mContext.startActivity(intent);
             }

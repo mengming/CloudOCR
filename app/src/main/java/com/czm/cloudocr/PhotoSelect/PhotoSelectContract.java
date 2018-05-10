@@ -1,5 +1,7 @@
 package com.czm.cloudocr.PhotoSelect;
 
+import android.os.Handler;
+
 import com.czm.cloudocr.BaseView;
 import com.czm.cloudocr.model.Photos;
 
@@ -16,7 +18,7 @@ public interface PhotoSelectContract {
     }
 
     interface Presenter{
-        void loadPhotos();
+        void loadPhotos(Handler handler);
         void getPhotos(String key);
     }
 }

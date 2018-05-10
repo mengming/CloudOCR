@@ -6,16 +6,11 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 
 import com.bumptech.glide.Glide;
 import com.czm.cloudocr.MainActivity;
@@ -23,7 +18,6 @@ import com.czm.cloudocr.R;
 import com.czm.cloudocr.model.Photos;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -37,7 +31,15 @@ public class PhotoSelectFragment extends Fragment implements PhotoSelectContract
     private List<String> mUrls = new ArrayList<>();
     private PhotoAdapter mPhotoAdapter;
     private boolean sIsScrolling;
-    private Handler mHandler;
+    private Handler mainHandler;
+    public Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            Bundle bundle = msg.getData();
+            showPhotos((Photos) bundle.getSerializable("photos"));
+        }
+    };
 
     @Nullable
     @Override
@@ -76,14 +78,14 @@ public class PhotoSelectFragment extends Fragment implements PhotoSelectContract
         super.onActivityCreated(savedInstanceState);
 
         new PhotoSelectPresenter(getContext(),this);
-        mPresenter.loadPhotos();
+        mPresenter.loadPhotos(mHandler);
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof MainActivity) {
-            mHandler = ((MainActivity) context).mHandler;
+            mainHandler = ((MainActivity) context).mHandler;
         }
     }
 
@@ -98,7 +100,7 @@ public class PhotoSelectFragment extends Fragment implements PhotoSelectContract
         Bundle bundle = new Bundle();
         bundle.putStringArrayList("urls", photos.getUrls());
         message.setData(bundle);
-        mHandler.sendMessage(message);
+        mainHandler.sendMessage(message);
         mUrls.clear();
         mUrls.addAll(photos.getGruopMap().get(photos.getUrls().get(0)));
         mPhotoAdapter.notifyDataSetChanged();

@@ -1,6 +1,5 @@
 package com.czm.cloudocr.OcrHistory;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -8,12 +7,10 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.czm.cloudocr.MainActivity;
 import com.czm.cloudocr.R;
 import com.czm.cloudocr.model.PhotoResult;
 
@@ -29,7 +26,6 @@ public class OcrHistoryFragment extends Fragment implements OcrHistoryContract.V
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            Log.d("ohf", "handleMessage: ");
             showHistory((List<PhotoResult>) msg.getData().getSerializable("results"));
         }
     };
@@ -52,7 +48,6 @@ public class OcrHistoryFragment extends Fragment implements OcrHistoryContract.V
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mRecyclerView.setHasFixedSize(true);
         mOcrHistoryAdapter = new OcrHistoryAdapter(getContext(), mPhotoResults);
         mRecyclerView.setAdapter(mOcrHistoryAdapter);
 
@@ -64,12 +59,7 @@ public class OcrHistoryFragment extends Fragment implements OcrHistoryContract.V
     public void showHistory(List<PhotoResult> results) {
         mPhotoResults.clear();
         mPhotoResults.addAll(results);
-        mRecyclerView.post(new Runnable() {
-            @Override
-            public void run() {
-                mOcrHistoryAdapter.notifyDataSetChanged();
-            }
-        });
+        mOcrHistoryAdapter.notifyDataSetChanged();
     }
 
     @Override
