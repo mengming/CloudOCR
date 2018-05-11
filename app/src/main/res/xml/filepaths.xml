@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <external-path
+    <external-files-path
         name="images"
-        path="test/"/>
+        path="DCIM/"/>
+    <external-files-path
+        name="pdf"
+        path="Documents/"/>
 </resources>

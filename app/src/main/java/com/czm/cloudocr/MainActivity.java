@@ -142,9 +142,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void takePhoto(){
-        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
-                + "/test/" + System.currentTimeMillis() + ".jpg");
-        file.getParentFile().mkdirs();
+        File file = new File(getExternalFilesDir(Environment.DIRECTORY_DCIM)
+                + "/test.jpg");
         imageUri = FileProvider.getUriForFile(MainActivity.this,
                 "com.czm.cloudocr.provider", file);
 

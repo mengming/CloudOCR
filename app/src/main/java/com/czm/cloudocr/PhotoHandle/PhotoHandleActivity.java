@@ -1,9 +1,11 @@
 package com.czm.cloudocr.PhotoHandle;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.czm.cloudocr.MainActivity;
@@ -131,6 +134,33 @@ public class PhotoHandleActivity extends AppCompatActivity implements View.OnCli
         Intent intent = new Intent(this, TextResultActivity.class);
         intent.putExtra("photo_result", result);
         startActivity(intent);
+    }
+
+    @Override
+    public void openPdf(String path) {
+        File file = new File(path);
+        if (file.exists()) {
+            Uri uri;
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                uri = FileProvider.getUriForFile(this, "com.czm.cloudocr.provider", file);
+                // 给目标应用一个临时授权
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            } else {
+                uri = Uri.fromFile(file);
+            }
+            intent.setDataAndType(uri, "application/pdf");
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            try {
+                startActivity(intent);
+            }
+            catch (ActivityNotFoundException e) {
+                Toast.makeText(this,
+                        "No Application Available to View PDF",
+                        Toast.LENGTH_SHORT).show();
+            }
+
+        }
     }
 
     @Override

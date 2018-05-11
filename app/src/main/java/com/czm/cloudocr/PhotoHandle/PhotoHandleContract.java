@@ -12,6 +12,7 @@ public interface PhotoHandleContract {
     interface View extends BaseView<Presenter>{
         void showImage(Uri uri);
         void showText(PhotoResult result);
+        void openPdf(String path);
     }
 
     interface Presenter{
