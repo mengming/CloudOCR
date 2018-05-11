@@ -11,7 +11,10 @@ import android.provider.MediaStore;
 import android.util.Log;
 
 
+import com.czm.cloudocr.model.PhotoResult;
 import com.czm.cloudocr.model.Photos;
+
+import org.litepal.crud.DataSupport;
 
 import java.io.File;
 import java.io.Serializable;
@@ -29,7 +32,7 @@ public class PhotoSelectPresenter implements PhotoSelectContract.Presenter {
 
     private final PhotoSelectContract.View mPhotoSelectView;
     private Context mContext;
-    private HashMap<String, List<String>> mGruopMap = new HashMap<String, List<String>>();
+    private HashMap<String, List<String>> mGruopMap = new HashMap<>();
     private ArrayList<String> dirs = new ArrayList<>();
     private Photos mPhotos;
 
@@ -37,6 +40,12 @@ public class PhotoSelectPresenter implements PhotoSelectContract.Presenter {
         mPhotoSelectView = view;
         mContext = context;
         mPhotoSelectView.setPresenter(this);
+    }
+
+    @Override
+    public PhotoResult checkPhoto(Uri uri) {
+        List<PhotoResult> list = DataSupport.where("rooturi == ?", uri.toString()).find(PhotoResult.class);
+        return list.size() == 0 ? null : list.get(0);
     }
 
     @Override
@@ -82,12 +91,11 @@ public class PhotoSelectPresenter implements PhotoSelectContract.Presenter {
                 mCursor.close();
                 Message message = new Message();
                 Bundle bundle = new Bundle();
-                bundle.putSerializable("photos", (Serializable) mPhotos);
+                bundle.putSerializable("photos", mPhotos);
                 message.setData(bundle);
                 handler.sendMessage(message);
             }
         }).start();
-        Log.d("ocr", "loadPhotos: ");
     }
 
     @Override

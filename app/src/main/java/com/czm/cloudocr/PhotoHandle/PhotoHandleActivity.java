@@ -10,8 +10,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.czm.cloudocr.MainActivity;
 import com.czm.cloudocr.R;
 import com.czm.cloudocr.TextResult.TextResultActivity;
 import com.czm.cloudocr.model.PhotoResult;
@@ -21,9 +23,15 @@ import java.io.File;
 
 public class PhotoHandleActivity extends AppCompatActivity implements View.OnClickListener, PhotoHandleContract.View{
 
+    private static final String TAG = "PhotoHandleActivity";
     private ImageView mContentView;
     private Uri imgUri;
+    private Button btnOcr;
+    private TextView tvOcr;
+
     private PhotoHandleContract.Presenter mPresenter;
+    private boolean flag;  //是否已经识别过
+    private PhotoResult mPhotoResult;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,17 +41,24 @@ public class PhotoHandleActivity extends AppCompatActivity implements View.OnCli
 
         mContentView = findViewById(R.id.handle_iv);
         new PhotoHandlePresenter(this, this);
-        Log.d("pha", "uri = " + getIntent().getStringExtra("photo"));
+        Log.d(TAG, "uri = " + getIntent().getStringExtra("photo"));
         imgUri = Uri.parse(getIntent().getStringExtra("photo"));
+        flag = getIntent().getBooleanExtra("flag", false);
         showImage(imgUri);
         Button btnCrop = findViewById(R.id.handle_crop_btn);
         btnCrop.setOnClickListener(this);
         Button btnBack = findViewById(R.id.handle_back_btn);
         btnBack.setOnClickListener(this);
-        Button btnOcr = findViewById(R.id.handle_ocr_btn);
+        btnOcr = findViewById(R.id.handle_ocr_btn);
         btnOcr.setOnClickListener(this);
         Button btnPdf = findViewById(R.id.handle_pdf_btn);
         btnPdf.setOnClickListener(this);
+        tvOcr = findViewById(R.id.handle_ocr_text);
+        if (flag) {
+            btnOcr.setBackgroundResource(R.drawable.ic_text);
+            tvOcr.setText("查看文字");
+            mPhotoResult = (PhotoResult) getIntent().getSerializableExtra("photo_result");
+        }
     }
 
     @Override
@@ -53,7 +68,11 @@ public class PhotoHandleActivity extends AppCompatActivity implements View.OnCli
             if (resultCode == RESULT_OK) {
                 imgUri = result.getUri();
                 showImage(imgUri);
-                Log.d("pha", "crop_uri = " + imgUri.toString());
+                flag = false;
+                btnOcr.setBackgroundResource(R.drawable.ic_ocr);
+                tvOcr.setText("文字识别");
+                mPhotoResult = null;
+                Log.d(TAG, "crop_uri = " + imgUri.toString());
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception error = result.getError();
             }
@@ -86,7 +105,13 @@ public class PhotoHandleActivity extends AppCompatActivity implements View.OnCli
                 finish();
                 break;
             case R.id.handle_ocr_btn :
-                mPresenter.compressPic(imgUri);
+                if (flag) {
+                    Intent intent = new Intent(this, TextResultActivity.class);
+                    intent.putExtra("photo_result", mPhotoResult);
+                    startActivity(intent);
+                } else {
+                    mPresenter.compressPic(imgUri);
+                }
                 break;
             case R.id.handle_pdf_btn :
                 mPresenter.savePdf(imgUri);

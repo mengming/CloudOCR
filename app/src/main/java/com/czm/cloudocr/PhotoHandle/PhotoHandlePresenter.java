@@ -36,6 +36,7 @@ import okhttp3.Response;
 
 public class PhotoHandlePresenter implements PhotoHandleContract.Presenter {
 
+    private static final String TAG = "PhotoHandlePresenter";
     private PhotoHandleContract.View mPhotoHandleView;
     private Context mContext;
     public static final int BORDER_WIDTH = 10;
@@ -53,11 +54,11 @@ public class PhotoHandlePresenter implements PhotoHandleContract.Presenter {
             Bitmap bitmap = BitmapFactory.decodeStream(is);
             File file = new File(mContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES),
                     "account" + DataSupport.count(PhotoResult.class) + ".jpg");
-            Log.d("php", "compressPic: uri=" + file.toURI().toString());
+            Log.d(TAG, "compressPic: uri=" + file.toURI().toString());
             Bitmap mBitmap = SystemUtils.compressImage(bitmap, file);
-            savePic(new PhotoResult(file.toURI().toString(), "识别后的文字"));
-            Log.d("php", "compress:" + DataSupport.count(PhotoResult.class));
-            Log.d("php", "compressPic: " + file.length()/1024 + "kb");
+            savePic(new PhotoResult(file.toURI().toString(), uri.toString(),  "识别后的文字"));
+            Log.d(TAG, "compress:" + DataSupport.count(PhotoResult.class));
+            Log.d(TAG, "compressPic: " + file.length()/1024 + "kb");
 //            sendPic(file);
         } catch (FileNotFoundException e) {
             e.printStackTrace();

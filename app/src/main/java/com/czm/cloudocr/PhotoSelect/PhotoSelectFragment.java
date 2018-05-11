@@ -39,8 +39,6 @@ import com.yanzhenjie.permission.SettingService;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.czm.cloudocr.MainActivity.TAG;
-
 /**
  * Created by Phelps on 2018/3/24.
  */
@@ -94,11 +92,11 @@ public class PhotoSelectFragment extends Fragment implements PhotoSelectContract
                 super.onScrolled(recyclerView, dx, dy);
             }
         });
-        mPhotoAdapter = new PhotoAdapter(getContext(), mUrls);
+        new PhotoSelectPresenter(getContext(),this);
+        mPhotoAdapter = new PhotoAdapter(getContext(), mUrls, mPresenter);
         mRecyclerView.setAdapter(mPhotoAdapter);
         super.onActivityCreated(savedInstanceState);
 
-        new PhotoSelectPresenter(getContext(),this);
         askPermission();
     }
 

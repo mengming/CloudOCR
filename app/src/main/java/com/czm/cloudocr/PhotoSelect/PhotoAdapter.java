@@ -18,6 +18,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.czm.cloudocr.GlideApp;
 import com.czm.cloudocr.PhotoHandle.PhotoHandleActivity;
 import com.czm.cloudocr.R;
+import com.czm.cloudocr.model.PhotoResult;
 
 import java.io.File;
 import java.util.List;
@@ -33,10 +34,12 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.ImageViewHol
 
     private Context mContext;
     private List<String> mUrls;
+    private PhotoSelectContract.Presenter mPresenter;
 
-    public PhotoAdapter(Context context, List<String> list){
+    public PhotoAdapter(Context context, List<String> urls, PhotoSelectContract.Presenter presenter) {
         mContext = context;
-        mUrls = list;
+        mUrls = urls;
+        mPresenter = presenter;
     }
 
     @NonNull
@@ -62,7 +65,11 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.ImageViewHol
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, PhotoHandleActivity.class);
-                intent.putExtra("photo", Uri.fromFile(new File(mUrls.get(position))).toString());
+                Uri uri = Uri.fromFile(new File(mUrls.get(position)));
+                PhotoResult result = mPresenter.checkPhoto(uri);
+                intent.putExtra("flag", result != null);
+                intent.putExtra("photo_result", result);
+                intent.putExtra("photo", uri.toString());
                 mContext.startActivity(intent);
             }
         });

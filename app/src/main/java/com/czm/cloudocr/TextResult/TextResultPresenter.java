@@ -7,8 +7,6 @@ import com.czm.cloudocr.model.PhotoResult;
 
 import org.litepal.crud.DataSupport;
 
-import java.util.List;
-
 
 public class TextResultPresenter implements TextResultContract.Presenter {
 
@@ -22,9 +20,8 @@ public class TextResultPresenter implements TextResultContract.Presenter {
     }
 
     @Override
-    public void loadText(String uri) {
-        List<PhotoResult> results = DataSupport.where("uri = ?", uri).find(PhotoResult.class);
-        if (results.size() != 0) mTextResultView.showText(results.get(0));
+    public PhotoResult refreshResult(int id) {
+        return DataSupport.find(PhotoResult.class, id);
     }
 
     @Override

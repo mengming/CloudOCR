@@ -7,7 +7,14 @@ import java.io.Serializable;
 public class PhotoResult extends DataSupport implements Serializable{
     private int id;
     private String uri;
+    private String rootUri;
     private String text;
+
+    public PhotoResult(String uri, String rootUri, String text) {
+        this.uri = uri;
+        this.rootUri = rootUri;
+        this.text = text;
+    }
 
     public int getId() {
         return id;
@@ -17,23 +24,20 @@ public class PhotoResult extends DataSupport implements Serializable{
         this.id = id;
     }
 
-
-    /**
-     *
-     * @param uri
-     * @param text
-     */
-    public PhotoResult(String uri, String text) {
-        this.uri = uri;
-        this.text = text;
-    }
-
     public String getUri() {
         return uri;
     }
 
     public void setUri(String uri) {
         this.uri = uri;
+    }
+
+    public String getRootUri() {
+        return rootUri;
+    }
+
+    public void setRootUri(String rootUri) {
+        this.rootUri = rootUri;
     }
 
     public String getText() {

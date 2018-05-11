@@ -2,4 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/text_proofread"
         android:title="@string/proofread" />
+
+    <item android:id="@+id/text_save"
+        android:title="@string/save"/>
 </menu>
