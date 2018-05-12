@@ -1,6 +1,8 @@
 package com.czm.cloudocr;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.Handler;
@@ -14,11 +16,18 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatSpinner;
+import android.support.v7.widget.ListPopupWindow;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.PopupMenu;
+import android.widget.PopupWindow;
+import android.widget.RelativeLayout.LayoutParams;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.czm.cloudocr.OcrHistory.OcrHistoryFragment;
 import com.czm.cloudocr.PhotoHandle.PhotoHandleActivity;
@@ -34,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
     private BottomNavigationView mBottomNavigationView;
     private MyViewPager mViewPager;
     private AppCompatSpinner mSpinner;
+    private ListPopupWindow mListPopupWindow;
+    private TextView tvUrl;
 
     private ArrayList<Fragment> mFragments;
     private List<String> mDirs = new ArrayList<>();
@@ -75,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
 
         mViewPager = findViewById(R.id.main_viewpager);
         mFragments = new ArrayList<>();
@@ -153,6 +165,5 @@ public class MainActivity extends AppCompatActivity {
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         startActivityForResult(intent, TAKE_PHOTO);
     }
-
 
 }
