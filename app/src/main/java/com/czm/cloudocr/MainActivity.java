@@ -3,7 +3,9 @@ package com.czm.cloudocr;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.ShapeDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
@@ -15,19 +17,16 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.AppCompatSpinner;
-import android.support.v7.widget.ListPopupWindow;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.PopupMenu;
 import android.widget.PopupWindow;
-import android.widget.RelativeLayout.LayoutParams;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.czm.cloudocr.OcrHistory.OcrHistoryFragment;
 import com.czm.cloudocr.PhotoHandle.PhotoHandleActivity;
@@ -42,9 +41,9 @@ public class MainActivity extends AppCompatActivity {
 
     private BottomNavigationView mBottomNavigationView;
     private MyViewPager mViewPager;
-    private AppCompatSpinner mSpinner;
-    private ListPopupWindow mListPopupWindow;
-    private TextView tvUrl;
+    private PopupWindow mPopup;
+    private TextView mTitle;
+    private ImageView mArrow;
 
     private ArrayList<Fragment> mFragments;
     private List<String> mDirs = new ArrayList<>();
@@ -53,13 +52,15 @@ public class MainActivity extends AppCompatActivity {
 
     public static final int TAKE_PHOTO = 1;
     private int lastFragmentIndex = 0;
+    private int lastPathIndex = 0;
 
     public Handler mHandler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            mDirs.clear();
             ArrayList<String> list = msg.getData().getStringArrayList("urls");
+            mTitle.setText(list.get(lastPathIndex));
+            mDirs.clear();
             mDirs.addAll(list);
             mDirAdapter.notifyDataSetChanged();
         }
@@ -72,22 +73,6 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
-        mSpinner = findViewById(R.id.main_spinner);
-        mDirAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, mDirs);
-        mSpinner.setAdapter(mDirAdapter);
-        mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                PhotoSelectFragment.mPresenter.getPhotos(mDirs.get(position));
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-
         mViewPager = findViewById(R.id.main_viewpager);
         mFragments = new ArrayList<>();
         mFragments.add(new PhotoSelectFragment());
@@ -105,20 +90,50 @@ public class MainActivity extends AppCompatActivity {
         };
         mViewPager.setAdapter(mAdapter);
 
+        mTitle = findViewById(R.id.main_tv_path);
+        mArrow = findViewById(R.id.main_arrow);
+        View background = View.inflate(this, R.layout.popup_background, null);
+        mPopup = new PopupWindow(background, 600, 800);
+        ListView listView = background.findViewById(R.id.path_list);
+        mDirAdapter = new ArrayAdapter<>(this, R.layout.item_path, mDirs);
+        listView.setAdapter(mDirAdapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                lastPathIndex = position;
+                mTitle.setText(mDirs.get(lastPathIndex));
+                PhotoSelectFragment.mPresenter.getPhotos(mDirs.get(lastPathIndex));
+                mPopup.dismiss();
+            }
+        });
+
         mBottomNavigationView = findViewById(R.id.main_bottom);
         mBottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.navigation_pic:
-                        mSpinner.setVisibility(View.VISIBLE);
+                        mArrow.setVisibility(View.VISIBLE);
+                        if (mDirs.size() != 0) mTitle.setText(mDirs.get(lastPathIndex));
+                        mTitle.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if (mPopup.isShowing()) {
+                                    mPopup.dismiss();
+                                } else {
+                                    mPopup.showAsDropDown(mTitle, (mTitle.getWidth()-600)/2, 0);
+                                }
+                            }
+                        });
                         mViewPager.setCurrentItem(0);
                         return true;
                     case R.id.navigation_camera:
                         takePhoto();
                         return true;
                     case R.id.navigation_history:
-                        mSpinner.setVisibility(View.INVISIBLE);
+                        mArrow.setVisibility(View.INVISIBLE);
+                        mTitle.setText("识别历史");
+                        mTitle.setOnClickListener(null);
                         mViewPager.setCurrentItem(1);
                         return true;
                 }

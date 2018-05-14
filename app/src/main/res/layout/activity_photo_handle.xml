@@ -72,7 +72,7 @@
                 android:orientation="vertical">
                 <Button
                     android:id="@+id/handle_pdf_btn"
-                    android:background="@drawable/ic_ocr"
+                    android:background="@drawable/ic_pdf"
                     android:layout_gravity="center_horizontal"
                     android:layout_width="30dp"
                     android:layout_height="30dp" />

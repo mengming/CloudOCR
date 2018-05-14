@@ -9,4 +9,6 @@
         <attr name="metaButtonBarButtonStyle" format="reference" />
     </declare-styleable>
 
+    <dimen name="margin_default">8dp</dimen>
+    <dimen name="margin_middle">16dp</dimen>
 </resources>
