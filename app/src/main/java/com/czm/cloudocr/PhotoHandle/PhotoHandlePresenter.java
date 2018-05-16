@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 
+import com.czm.cloudocr.PhotoSelect.PhotoSelectFragment;
 import com.czm.cloudocr.model.PhotoResult;
 import com.czm.cloudocr.util.HttpUtils;
 import com.czm.cloudocr.util.PdfBackground;
@@ -17,6 +18,7 @@ import com.itextpdf.text.Image;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.pdf.PdfWriter;
 
+import org.json.JSONObject;
 import org.litepal.crud.DataSupport;
 
 import java.io.ByteArrayOutputStream;
@@ -27,6 +29,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -56,31 +60,49 @@ public class PhotoHandlePresenter implements PhotoHandleContract.Presenter {
                     "account" + DataSupport.count(PhotoResult.class) + ".jpg");
             Log.d(TAG, "compressPic: uri=" + file.toURI().toString());
             Bitmap mBitmap = SystemUtils.compressImage(bitmap, file);
-            savePic(new PhotoResult(file.toURI().toString(), uri.toString(),  "识别后的文字"));
             Log.d(TAG, "compress:" + DataSupport.count(PhotoResult.class));
             Log.d(TAG, "compressPic: " + file.length()/1024 + "kb");
-//            sendPic(file);
+            sendPic(file, uri);
         } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     @Override
-    public void sendPic(File file) throws IOException{
+    public void sendPic(File file, Uri uri) throws IOException{
         OkHttpClient client = new OkHttpClient();
         MultipartBody.Builder builder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
-                .addFormDataPart("image", file.getName(),
+                .addFormDataPart("myFile", file.getName(),
                         RequestBody.create(MediaType.parse("image/png"), file))
-                .addFormDataPart("account", "mengming");
+                .addFormDataPart("username", "mengming");
         RequestBody requestBody = builder.build();
         Request request = new Request.Builder()
-                .url("www.baidu.com")
+                .url("http://192.168.199.234:8080/imgUpload")
                 .post(requestBody)
                 .build();
-        Response response = client.newCall(request).execute();
-//        PhotoResult result = new PhotoResult();
-//        savePic(result);
+        Call call = client.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.d(TAG, "onFailure: e = " + e.getMessage());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.code() == 200) {
+//            JSONObject object = new JSONObject();
+//            PhotoResult photoResult = new PhotoResult(file.toURI().toString(), uri.toString(), )
+//            savePic();
+
+                }
+                Log.d(TAG, "sendPic: body = " + response.body().string());
+                Log.d(TAG, "sendPic: code = " + response.code());
+            }
+        });
+
     }
 
     @Override
