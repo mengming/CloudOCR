@@ -12,6 +12,11 @@ import com.czm.cloudocr.model.PhotoResult;
 import com.czm.cloudocr.util.HttpUtils;
 import com.czm.cloudocr.util.PdfBackground;
 import com.czm.cloudocr.util.SystemUtils;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Image;
@@ -28,6 +33,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -71,15 +77,16 @@ public class PhotoHandlePresenter implements PhotoHandleContract.Presenter {
     }
 
     @Override
-    public void sendPic(File file, Uri uri) throws IOException{
-        OkHttpClient client = new OkHttpClient();
+    public void sendPic(final File file, final Uri uri) throws IOException{
+        OkHttpClient client = new OkHttpClient.Builder()
+                .readTimeout(20, TimeUnit.SECONDS).build();
         MultipartBody.Builder builder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("myFile", file.getName(),
                         RequestBody.create(MediaType.parse("image/png"), file))
                 .addFormDataPart("username", "mengming");
         RequestBody requestBody = builder.build();
-        Request request = new Request.Builder()
+        final Request request = new Request.Builder()
                 .url("http://192.168.199.234:8080/imgUpload")
                 .post(requestBody)
                 .build();
@@ -92,14 +99,49 @@ public class PhotoHandlePresenter implements PhotoHandleContract.Presenter {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                if (response.code() == 200) {
-//            JSONObject object = new JSONObject();
-//            PhotoResult photoResult = new PhotoResult(file.toURI().toString(), uri.toString(), )
-//            savePic();
-
-                }
-                Log.d(TAG, "sendPic: body = " + response.body().string());
+                String string = response.body().string();
+                Log.d(TAG, "sendPic: body = " + string);
                 Log.d(TAG, "sendPic: code = " + response.code());
+                if (response.code() == 200) {
+                    GsonBuilder gsonBuilder = new GsonBuilder();
+                    gsonBuilder.registerTypeAdapter(PhotoResult.class, new TypeAdapter<PhotoResult>() {
+                        @Override
+                        public void write(JsonWriter out, PhotoResult value) throws IOException {
+
+                        }
+
+                        @Override
+                        public PhotoResult read(JsonReader in) throws IOException {
+                            final PhotoResult result = new PhotoResult();
+
+                            in.beginObject();
+                            while (in.hasNext()) {
+                                switch (in.nextName()) {
+                                    case "id":
+                                        result.setRemoteId(in.nextString());
+                                        break;
+                                    case "text":
+                                        result.setText(in.nextString());
+                                        break;
+                                    case "date":
+                                        result.setDate(in.nextString());
+                                        break;
+                                    default:
+                                        in.nextString();
+                                        break;
+                                }
+                            }
+                            in.endObject();
+                            return result;
+                        }
+                    });
+                    Gson gson = gsonBuilder.create();
+                    PhotoResult result = gson.fromJson(string, PhotoResult.class);
+                    result.setUri(file.toURI().toString());
+                    result.setRootUri(uri.toString());
+                    savePic(result);
+                    Log.d(TAG, "onResponse: " + result.toString());
+                }
             }
         });
 

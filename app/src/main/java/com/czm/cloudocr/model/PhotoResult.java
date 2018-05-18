@@ -1,14 +1,22 @@
 package com.czm.cloudocr.model;
 
+import com.google.gson.annotations.SerializedName;
+
 import org.litepal.crud.DataSupport;
 
 import java.io.Serializable;
 
 public class PhotoResult extends DataSupport implements Serializable{
     private int id;
+    @SerializedName("id")
+    private String remoteId;
     private String uri;
     private String rootUri;
     private String text;
+    private String date;
+
+    public PhotoResult() {
+    }
 
     public PhotoResult(String uri, String rootUri, String text) {
         this.uri = uri;
@@ -46,5 +54,33 @@ public class PhotoResult extends DataSupport implements Serializable{
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public String getRemoteId() {
+        return remoteId;
+    }
+
+    public void setRemoteId(String remoteId) {
+        this.remoteId = remoteId;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    @Override
+    public String toString() {
+        return "PhotoResult{" +
+                "id=" + id +
+                ", remoteId='" + remoteId + '\'' +
+                ", uri='" + uri + '\'' +
+                ", rootUri='" + rootUri + '\'' +
+                ", text='" + text + '\'' +
+                ", date='" + date + '\'' +
+                '}';
     }
 }

@@ -15,6 +15,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.util.Date;
 
 /**
  * Created by Phelps on 2018/3/26.
@@ -50,5 +52,11 @@ public class SystemUtils {
         ByteArrayInputStream isBm = new ByteArrayInputStream(baos.toByteArray());//把压缩后的数据baos存放到ByteArrayInputStream中
         Bitmap bitmap = BitmapFactory.decodeStream(isBm, null, null);//把ByteArrayInputStream数据生成图片
         return bitmap;
+    }
+
+    public static String dateFormat(String date){
+        DateFormat mediumDateFormat = DateFormat.getDateTimeInstance
+                (DateFormat.MEDIUM,DateFormat.MEDIUM);
+        return mediumDateFormat.format(new Date(Long.parseLong(date)));
     }
 }

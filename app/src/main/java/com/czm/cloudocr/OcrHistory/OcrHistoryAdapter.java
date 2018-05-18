@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide;
 import com.czm.cloudocr.R;
 import com.czm.cloudocr.TextResult.TextResultActivity;
 import com.czm.cloudocr.model.PhotoResult;
+import com.czm.cloudocr.util.SystemUtils;
 
 import java.util.List;
 
@@ -41,6 +42,7 @@ public class OcrHistoryAdapter extends RecyclerView.Adapter<OcrHistoryAdapter.Hi
                 .load(result.getUri())
                 .into(holder.mImageView);
         holder.mTextView.setText(result.getText());
+        holder.mDateView.setText(SystemUtils.dateFormat(result.getDate()));
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -59,10 +61,12 @@ public class OcrHistoryAdapter extends RecyclerView.Adapter<OcrHistoryAdapter.Hi
     public class HistoryViewHolder extends RecyclerView.ViewHolder {
         ImageView mImageView;
         TextView mTextView;
+        TextView mDateView;
         public HistoryViewHolder(View itemView) {
             super(itemView);
             mImageView = itemView.findViewById(R.id.item_history_photo);
             mTextView = itemView.findViewById(R.id.item_history_text);
+            mDateView = itemView.findViewById(R.id.item_history_date);
         }
     }
 }
