@@ -39,6 +39,7 @@
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" />
         <activity android:name=".TextResult.TextResultActivity" />
+        <activity android:name=".Login.LoginActivity" />
     </application>
 
 </manifest>

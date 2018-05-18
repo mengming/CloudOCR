@@ -6,5 +6,8 @@
     <string name="handle_pdf">pdf转换</string>
     <string name="settings">设置</string>
     <string name="save">保存</string>
+    <string name="hint_password">请输入8~16位密码</string>
+    <string name="hint_account">请输入10位以内账号</string>
+    <string name="login">登录</string>
 
 </resources>

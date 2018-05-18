@@ -1,29 +1,107 @@
 package com.czm.cloudocr.Login;
 
+import android.app.ProgressDialog;
+import android.os.Handler;
+import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AbsoluteLayout;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.czm.cloudocr.R;
+import com.czm.cloudocr.util.SystemUtils;
+
+import java.io.IOException;
 
 public class LoginActivity extends AppCompatActivity implements LoginContract.View{
 
     private LoginContract.Presenter mPresenter;
-
-    private RelativeLayout mRelativeLayout;
+    private ProgressDialog mProgressDialog;
+    private Handler mHandler = new Handler();
+    private TextInputLayout mAccountInput, mPasswordInput;
+    private TextInputEditText mAccountEditText, mPasswordEditText;
+    private Button mBtnLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        mRelativeLayout = findViewById(R.id.login_relative);
+        Toolbar toolbar = findViewById(R.id.login_toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        mAccountInput = findViewById(R.id.til_account);
+        mPasswordInput = findViewById(R.id.til_password);
+        mAccountEditText = findViewById(R.id.et_account);
+        mPasswordEditText = findViewById(R.id.et_password);
+        mBtnLogin = findViewById(R.id.login_btn);
+        mBtnLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    mPresenter.login(mAccountEditText.getText().toString(), mPasswordEditText.getText().toString());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        mAccountEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() > 10) {
+                    mAccountInput.setErrorEnabled(true);
+                    mAccountInput.setError("账号最大长度不超过10");
+                } else {
+                    mAccountInput.setErrorEnabled(false);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        mPasswordEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() > 16) {
+                    mPasswordInput.setErrorEnabled(true);
+                    mPasswordInput.setError("密码长度不超过16");
+                } else if (s.length() < 8) {
+                    mPasswordInput.setErrorEnabled(true);
+                    mPasswordInput.setError("密码长度不小于8");
+                } else {
+                    mPasswordInput.setErrorEnabled(false);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
 
         new LoginPresenter(this, this);
+//        loading();
     }
 
     @Override
@@ -32,24 +110,38 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     }
 
     @Override
+    public void loading() {
+        mProgressDialog = SystemUtils.waitingDialog(this, "登录中");
+        mProgressDialog.show();
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                success("登录成功");
+            }
+        }, 3000);
+    }
+
+    @Override
     public void success(String message) {
-//        showMessage();
-        finish();
+        mProgressDialog.setMessage(message);
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mProgressDialog.dismiss();
+                finish();
+            }
+        }, 3000);
     }
 
     @Override
     public void error(String message) {
-
+        mProgressDialog.setMessage(message);
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mProgressDialog.dismiss();
+            }
+        }, 3000);
     }
 
-    private void showMessage(String message){
-//        View view = LayoutInflater.from(this).inflate(R.layout.popwindow_hint, null);
-//        TextView textView = view.findViewById(R.id.window_tv);
-//        textView.setText(message);
-//        RelativeLayout.LayoutParams paramsS = new RelativeLayout.LayoutParams(AbsoluteLayout.LayoutParams.WRAP_CONTENT, AbsoluteLayout.LayoutParams.WRAP_CONTENT);
-//        paramsS.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
-//        // paramsS.setMargins(0, 900, 0,0);
-//        view.setLayoutParams(paramsS);
-//        mRelativeLayout.addView(view);
-    }
 }

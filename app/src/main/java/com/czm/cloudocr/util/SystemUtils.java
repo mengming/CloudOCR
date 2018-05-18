@@ -1,5 +1,6 @@
 package com.czm.cloudocr.util;
 
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -58,5 +59,14 @@ public class SystemUtils {
         DateFormat mediumDateFormat = DateFormat.getDateTimeInstance
                 (DateFormat.MEDIUM,DateFormat.MEDIUM);
         return mediumDateFormat.format(new Date(Long.parseLong(date)));
+    }
+
+    public static ProgressDialog waitingDialog(Context context, String message){
+        ProgressDialog progressDialog = new ProgressDialog(context);
+        progressDialog.setIndeterminate(false);//循环滚动
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setMessage(message);
+        progressDialog.setCancelable(false);//false不能取消显示，true可以取消显示
+        return progressDialog;
     }
 }

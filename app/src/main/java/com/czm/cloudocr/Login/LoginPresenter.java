@@ -22,6 +22,7 @@ public class LoginPresenter implements LoginContract.Presenter {
 
     @Override
     public void login(String account, String password) throws IOException{
+        mView.loading();
         OkHttpClient client = new OkHttpClient();
         MultipartBody.Builder builder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)

@@ -6,6 +6,7 @@ import java.io.IOException;
 
 public interface LoginContract {
     interface View extends BaseView<Presenter>{
+        void loading();
         void success(String message);
         void error(String message);
     }
