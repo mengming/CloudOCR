@@ -13,5 +13,6 @@ public interface LoginContract {
 
     interface Presenter{
         void login(String account, String password) throws IOException;
+        void register(String account, String password) throws IOException;
     }
 }

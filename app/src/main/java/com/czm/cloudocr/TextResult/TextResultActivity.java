@@ -2,7 +2,11 @@ package com.czm.cloudocr.TextResult;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.graphics.BitmapFactory;
 import android.os.Handler;
+import android.support.constraint.ConstraintLayout;
+import android.support.constraint.ConstraintSet;
+import android.support.transition.TransitionManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,8 +15,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.czm.cloudocr.R;
 import com.czm.cloudocr.model.PhotoResult;
 import com.czm.cloudocr.util.SystemUtils;
@@ -23,7 +29,12 @@ public class TextResultActivity extends AppCompatActivity implements Toolbar.OnM
     private TextResultContract.Presenter mPresenter;
     private PhotoResult mPhotoResult;
     private EditText mEditText;
+    private ImageView mImageView;
     private ProgressDialog mProgressDialog;
+    private ConstraintSet resizeConstraintSet = new ConstraintSet();
+    private ConstraintSet resetConstraintSet = new ConstraintSet();
+    private ConstraintLayout mConstraintLayout;
+    private Boolean compareFlag = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +46,10 @@ public class TextResultActivity extends AppCompatActivity implements Toolbar.OnM
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setOnMenuItemClickListener(this);
         mEditText = findViewById(R.id.result_edittext);
+        mImageView = findViewById(R.id.iv_compare_pic);
+        mConstraintLayout = findViewById(R.id.result_constraint);
+        resetConstraintSet.clone(mConstraintLayout);
+        resizeConstraintSet.clone(mConstraintLayout);
 
         new TextResultPresenter(this, this);
 
@@ -53,7 +68,7 @@ public class TextResultActivity extends AppCompatActivity implements Toolbar.OnM
 
         switch (item.getItemId()) {
             case R.id.text_proofread:
-                Toast.makeText(this, "做不出来", Toast.LENGTH_SHORT).show();
+                comparePic();
                 break;
             case R.id.text_save:
                 mPresenter.updateText(mEditText.getText().toString(), mPhotoResult.getId());
@@ -83,6 +98,9 @@ public class TextResultActivity extends AppCompatActivity implements Toolbar.OnM
     @Override
     public void showText(PhotoResult photoResult) {
         mEditText.setText(photoResult.getText());
+        Glide.with(this)
+                .load(photoResult.getUri())
+                .into(mImageView);
     }
 
     @Override
@@ -125,7 +143,16 @@ public class TextResultActivity extends AppCompatActivity implements Toolbar.OnM
 
     @Override
     public void comparePic() {
-
+        TransitionManager.beginDelayedTransition(mConstraintLayout);
+        if (compareFlag) {
+            compareFlag = false;
+            resetConstraintSet.applyTo(mConstraintLayout);
+        } else {
+            compareFlag = true;
+            resizeConstraintSet.connect(R.id.result_edittext, ConstraintSet.BOTTOM, R.id.resize_guideline, ConstraintSet.TOP);
+            resizeConstraintSet.connect(R.id.iv_compare_pic, ConstraintSet.TOP, R.id.resize_guideline, ConstraintSet.BOTTOM);
+            resizeConstraintSet.applyTo(mConstraintLayout);
+        }
     }
 
     @Override

@@ -21,14 +21,14 @@ import com.czm.cloudocr.util.SystemUtils;
 
 import java.io.IOException;
 
-public class LoginActivity extends AppCompatActivity implements LoginContract.View{
+public class LoginActivity extends AppCompatActivity implements LoginContract.View, View.OnClickListener{
 
     private LoginContract.Presenter mPresenter;
     private ProgressDialog mProgressDialog;
     private Handler mHandler = new Handler();
     private TextInputLayout mAccountInput, mPasswordInput;
     private TextInputEditText mAccountEditText, mPasswordEditText;
-    private Button mBtnLogin;
+    private Button mBtnLogin, mBtnRegister;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,16 +44,9 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
         mAccountEditText = findViewById(R.id.et_account);
         mPasswordEditText = findViewById(R.id.et_password);
         mBtnLogin = findViewById(R.id.login_btn);
-        mBtnLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    mPresenter.login(mAccountEditText.getText().toString(), mPasswordEditText.getText().toString());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+        mBtnLogin.setOnClickListener(this);
+        mBtnRegister = findViewById(R.id.register_btn);
+        mBtnRegister.setOnClickListener(this);
         mAccountEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -144,4 +137,25 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
         }, 1000);
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.login_btn: {
+                try {
+                    mPresenter.login(mAccountEditText.getText().toString(), mPasswordEditText.getText().toString());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+            }
+            case R.id.register_btn: {
+                try {
+                    mPresenter.register(mAccountEditText.getText().toString(), mPasswordEditText.getText().toString());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+            }
+        }
+    }
 }

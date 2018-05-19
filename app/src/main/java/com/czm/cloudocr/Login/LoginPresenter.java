@@ -4,6 +4,7 @@ import android.content.Context;
 
 import java.io.IOException;
 
+import okhttp3.Call;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -23,6 +24,26 @@ public class LoginPresenter implements LoginContract.Presenter {
     @Override
     public void login(String account, String password) throws IOException{
         mView.loading();
+        Response response = postServer(account, password).execute();
+        if (response.code() == 200) {
+            mView.success(response.message());
+        } else {
+            mView.error(response.message());
+        }
+    }
+
+    @Override
+    public void register(String account, String password) throws IOException {
+        mView.loading();
+        Response response = postServer(account, password).execute();
+        if (response.code() == 200) {
+            mView.success(response.message());
+        } else {
+            mView.error(response.message());
+        }
+    }
+
+    private Call postServer(String account, String password){
         OkHttpClient client = new OkHttpClient();
         MultipartBody.Builder builder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
@@ -33,11 +54,6 @@ public class LoginPresenter implements LoginContract.Presenter {
                 .url("www.baidu.com")
                 .post(requestBody)
                 .build();
-        Response response = client.newCall(request).execute();
-        if (response.code() == 200) {
-            mView.success(response.message());
-        } else {
-            mView.error(response.message());
-        }
+        return client.newCall(request);
     }
 }
