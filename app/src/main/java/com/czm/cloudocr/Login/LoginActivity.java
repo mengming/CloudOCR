@@ -130,7 +130,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
                 mProgressDialog.dismiss();
                 finish();
             }
-        }, 3000);
+        }, 1000);
     }
 
     @Override
@@ -141,7 +141,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
             public void run() {
                 mProgressDialog.dismiss();
             }
-        }, 3000);
+        }, 1000);
     }
 
 }

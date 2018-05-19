@@ -1,6 +1,8 @@
 package com.czm.cloudocr.TextResult;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,6 +15,7 @@ import android.widget.Toast;
 
 import com.czm.cloudocr.R;
 import com.czm.cloudocr.model.PhotoResult;
+import com.czm.cloudocr.util.SystemUtils;
 
 public class TextResultActivity extends AppCompatActivity implements Toolbar.OnMenuItemClickListener, TextResultContract.View{
 
@@ -20,6 +23,7 @@ public class TextResultActivity extends AppCompatActivity implements Toolbar.OnM
     private TextResultContract.Presenter mPresenter;
     private PhotoResult mPhotoResult;
     private EditText mEditText;
+    private ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +57,6 @@ public class TextResultActivity extends AppCompatActivity implements Toolbar.OnM
                 break;
             case R.id.text_save:
                 mPresenter.updateText(mEditText.getText().toString(), mPhotoResult.getId());
-                mPhotoResult = mPresenter.refreshResult(mPhotoResult.getId());
                 break;
         }
 
@@ -83,6 +86,25 @@ public class TextResultActivity extends AppCompatActivity implements Toolbar.OnM
     }
 
     @Override
+    public void waiting() {
+        mProgressDialog = SystemUtils.waitingDialog(this, "正在保存中...");
+        mProgressDialog.show();
+    }
+
+    @Override
+    public void updated() {
+        mProgressDialog.setMessage("云端同步成功");
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mProgressDialog.dismiss();
+                finish();
+            }
+        },1000);
+    }
+
+    @Override
     public void saveDialog() {
         new AlertDialog.Builder(this)
                 .setMessage("是否放弃修改")
@@ -90,7 +112,6 @@ public class TextResultActivity extends AppCompatActivity implements Toolbar.OnM
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         mPresenter.updateText(mEditText.getText().toString(), mPhotoResult.getId());
-                        finish();
                     }
                 })
                 .setNegativeButton("放弃", new DialogInterface.OnClickListener() {
