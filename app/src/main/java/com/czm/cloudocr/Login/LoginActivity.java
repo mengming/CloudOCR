@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsoluteLayout;
 import android.widget.Button;
@@ -94,7 +95,15 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
         });
 
         new LoginPresenter(this, this);
-//        loading();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -106,12 +115,12 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     public void loading() {
         mProgressDialog = SystemUtils.waitingDialog(this, "登录中");
         mProgressDialog.show();
-        mHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                success("登录成功");
-            }
-        }, 3000);
+//        mHandler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                success("登录成功");
+//            }
+//        }, 3000);
     }
 
     @Override

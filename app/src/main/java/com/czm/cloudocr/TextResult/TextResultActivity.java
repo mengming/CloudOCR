@@ -2,7 +2,6 @@ package com.czm.cloudocr.TextResult;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
@@ -16,7 +15,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.czm.cloudocr.R;
