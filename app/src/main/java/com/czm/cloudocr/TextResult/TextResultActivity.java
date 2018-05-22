@@ -44,6 +44,7 @@ public class TextResultActivity extends AppCompatActivity implements Toolbar.OnM
         setContentView(R.layout.activity_text_result);
 
         Toolbar toolbar = findViewById(R.id.text_toolbar);
+        toolbar.setTitle("识别结果");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setOnMenuItemClickListener(this);

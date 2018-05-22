@@ -8,15 +8,12 @@ import com.czm.cloudocr.util.SystemUtils;
 import com.google.gson.Gson;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class TranslatePresenter implements TranslateContract.Presenter {
@@ -39,13 +36,6 @@ public class TranslatePresenter implements TranslateContract.Presenter {
     @Override
     public void send(String text) {
         String spliceStr = null;
-        String encodeText = null;
-        try {
-            encodeText = URLEncoder.encode(text, "utf8");
-            Log.d(TAG, "send: encode = " + encodeText);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
         spliceStr = APPID + text + SALT + KEY;
         String mdStr = SystemUtils.md5(spliceStr);
         Log.d(TAG, "send: spliceStr = " + spliceStr);
@@ -53,7 +43,7 @@ public class TranslatePresenter implements TranslateContract.Presenter {
         OkHttpClient client = new OkHttpClient();
         MultipartBody.Builder builder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
-                .addFormDataPart("q", encodeText)
+                .addFormDataPart("q", text)
                 .addFormDataPart("from", "zh")
                 .addFormDataPart("to", "en")
                 .addFormDataPart("appid", APPID)
@@ -73,10 +63,11 @@ public class TranslatePresenter implements TranslateContract.Presenter {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 Log.d(TAG, "onResponse: code = " + response.code());
-                Log.d(TAG, "onResponse: body = " + response.body().string());
-//                Gson gson = new Gson();
-//                TransResult result = gson.fromJson(response.body().string(), TransResult.class);
-//                mTranslateView.showTranslated(result.getTrans_result().get(0).getDst());
+                String body = response.body().string();
+                Log.d(TAG, "onResponse: body = " + body);
+                Gson gson = new Gson();
+                TransResult result = gson.fromJson(body, TransResult.class);
+                mTranslateView.showTranslated(result.getTrans_result().get(0).getDst());
             }
         });
     }

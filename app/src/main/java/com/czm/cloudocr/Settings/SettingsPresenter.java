@@ -1,8 +1,6 @@
-package com.czm.cloudocr.TextResult;
+package com.czm.cloudocr.Settings;
 
-import android.content.ContentValues;
 import android.content.Context;
-import android.util.Log;
 
 import com.czm.cloudocr.model.PhotoResult;
 import com.google.gson.JsonArray;
@@ -11,6 +9,7 @@ import com.google.gson.JsonObject;
 import org.litepal.crud.DataSupport;
 
 import java.io.IOException;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -19,30 +18,27 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+public class SettingsPresenter implements SettingsContract.Presenter {
 
-public class TextResultPresenter implements TextResultContract.Presenter {
-
-    private static final String TAG = "TextResultPresenter";
-    private TextResultContract.View mTextResultView;
+    private SettingsContract.View mSettingsView;
     private Context mContext;
 
-    public TextResultPresenter(TextResultContract.View textResultView, Context context) {
-        mTextResultView = textResultView;
+    public SettingsPresenter(SettingsContract.View settingsView, Context context) {
+        mSettingsView = settingsView;
         mContext = context;
-        mTextResultView.setPresenter(this);
+        mSettingsView.setPresenter(this);
     }
 
     @Override
-    public void updateText(String text, int id) {
-        mTextResultView.waiting();
-        ContentValues values = new ContentValues();
-        values.put("text", text);
-        DataSupport.update(PhotoResult.class, values, id);
+    public void uploadAll() {
+        List<PhotoResult> results = DataSupport.findAll(PhotoResult.class);
         JsonArray array = new JsonArray();
-        JsonObject object = new JsonObject();
-        object.addProperty("id", String.valueOf(id));
-        object.addProperty("text", text);
-        array.add(object);
+        for (PhotoResult result : results) {
+            JsonObject object = new JsonObject();
+            object.addProperty("id", result.getRemoteId());
+            object.addProperty("text", result.getText());
+            array.add(object);
+        }
         OkHttpClient client = new OkHttpClient();
         MultipartBody.Builder builder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
@@ -60,7 +56,7 @@ public class TextResultPresenter implements TextResultContract.Presenter {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                mTextResultView.updated();
+                mSettingsView.uploaded();
             }
         });
     }

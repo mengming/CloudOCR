@@ -1,6 +1,7 @@
 package com.czm.cloudocr.Login;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Handler;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
@@ -9,13 +10,10 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.LayoutInflater;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AbsoluteLayout;
 import android.widget.Button;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.czm.cloudocr.R;
 import com.czm.cloudocr.util.SystemUtils;
@@ -30,6 +28,8 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     private TextInputLayout mAccountInput, mPasswordInput;
     private TextInputEditText mAccountEditText, mPasswordEditText;
     private Button mBtnLogin, mBtnRegister;
+
+    private static final String TAG = "LoginActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +100,9 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
+            Intent intent = new Intent();
+            intent.putExtra("account", "");
+            setResult(0, intent);
             finish();
             return true;
         }
@@ -124,6 +127,11 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
             @Override
             public void run() {
                 mProgressDialog.dismiss();
+                Intent intent = new Intent();
+                String account = LoginActivity.this.getSharedPreferences("settings", MODE_PRIVATE).getString("account","");
+                Log.d(TAG, "run: account = " + account);
+                intent.putExtra("account", account);
+                setResult(0, intent);
                 finish();
             }
         }, 1000);
@@ -165,5 +173,13 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
                 break;
             }
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent();
+        intent.putExtra("account", "");
+        setResult(0, intent);
+        super.onBackPressed();
     }
 }

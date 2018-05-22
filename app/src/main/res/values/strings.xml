@@ -11,5 +11,9 @@
     <string name="login">登录</string>
     <string name="register">注册</string>
     <string name="translate">翻译</string>
+    <string name="account_not_login">用户未登录</string>
+    <string name="auto_login">保存用户并自动登录</string>
+    <string name="upload_history">上传未同步的历史信息</string>
+    <string name="auto_cloud">自动同步历史信息</string>
 
 </resources>

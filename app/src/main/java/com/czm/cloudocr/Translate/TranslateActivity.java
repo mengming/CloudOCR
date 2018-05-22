@@ -26,6 +26,7 @@ public class TranslateActivity extends AppCompatActivity implements TranslateCon
         setContentView(R.layout.activity_translate);
 
         Toolbar toolbar = findViewById(R.id.translate_toolbar);
+        toolbar.setTitle("翻译");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 

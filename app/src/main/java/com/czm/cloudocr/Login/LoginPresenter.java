@@ -5,10 +5,8 @@ import android.util.Log;
 
 import com.czm.cloudocr.model.LoginResult;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 
 import java.io.IOException;
-import java.nio.file.Path;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -31,7 +29,7 @@ public class LoginPresenter implements LoginContract.Presenter {
     }
 
     @Override
-    public void login(String account, String password) throws IOException{
+    public void login(final String account, String password) throws IOException{
         mView.loading();
         postServer(account, password, "login").enqueue(new Callback() {
             @Override
@@ -45,6 +43,8 @@ public class LoginPresenter implements LoginContract.Presenter {
                 LoginResult result = gson.fromJson(response.body().string(), LoginResult.class);
                 Log.d(TAG, "onResponse: " + result.toString());
                 if (result.getStatus().equals("OK")) {
+                    mContext.getSharedPreferences("settings", Context.MODE_PRIVATE)
+                            .edit().putString("account", account).apply();
                     mView.success(result.getNote());
                 } else if (result.getStatus().equals("PW") || result.getStatus().equals("NoUser")){
                     mView.error(result.getStatus(), result.getNote());
@@ -54,7 +54,7 @@ public class LoginPresenter implements LoginContract.Presenter {
     }
 
     @Override
-    public void register(String account, String password) throws IOException {
+    public void register(final String account, String password) throws IOException {
         mView.loading();
         postServer(account, password, "regist").enqueue(new Callback() {
             @Override
@@ -67,6 +67,8 @@ public class LoginPresenter implements LoginContract.Presenter {
                 Gson gson = new Gson();
                 LoginResult result = gson.fromJson(response.body().string(), LoginResult.class);
                 if (result.getStatus().equals("OK")) {
+                    mContext.getSharedPreferences("settings", Context.MODE_PRIVATE)
+                            .edit().putString("account", account).apply();
                     mView.success(result.getNote());
                 } else {
                     mView.error(result.getStatus(), result.getNote());

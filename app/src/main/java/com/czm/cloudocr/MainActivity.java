@@ -33,6 +33,7 @@ import com.czm.cloudocr.Login.LoginActivity;
 import com.czm.cloudocr.OcrHistory.OcrHistoryFragment;
 import com.czm.cloudocr.PhotoHandle.PhotoHandleActivity;
 import com.czm.cloudocr.PhotoSelect.PhotoSelectFragment;
+import com.czm.cloudocr.Settings.SettingsActivity;
 import com.czm.cloudocr.widget.MyViewPager;
 
 import java.io.File;
@@ -180,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.settings:
-                startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                startActivity(new Intent(MainActivity.this, SettingsActivity.class));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
