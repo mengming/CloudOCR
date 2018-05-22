@@ -2,8 +2,10 @@ package com.czm.cloudocr.TextResult;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.util.Log;
 
 import com.czm.cloudocr.model.PhotoResult;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import org.litepal.crud.DataSupport;
@@ -12,16 +14,15 @@ import java.io.IOException;
 
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 
 
 public class TextResultPresenter implements TextResultContract.Presenter {
 
+    private static final String TAG = "TextResultPresenter";
     private TextResultContract.View mTextResultView;
     private Context mContext;
 
@@ -37,14 +38,20 @@ public class TextResultPresenter implements TextResultContract.Presenter {
         ContentValues values = new ContentValues();
         values.put("text", text);
         DataSupport.update(PhotoResult.class, values, id);
-        JsonObject object = new JsonObject();
-        object.addProperty("id", id);
-        object.addProperty("text", text);
+        JsonArray array = new JsonArray();
+        JsonObject object1 = new JsonObject();
+        object1.addProperty("id", String.valueOf(id));
+        object1.addProperty("text", text);
+        array.add(object1);
+        array.add(object1);
+        array.add(object1);
         OkHttpClient client = new OkHttpClient();
-        RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), object.toString());
+        MultipartBody.Builder builder = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("UText", array.toString());
         Request request = new Request.Builder()
-                .url("www.baidu.com")
-                .post(body)
+                .url("http://192.168.199.234:8080/TxtUpdate")
+                .post(builder.build())
                 .build();
         Call call = client.newCall(request);
         call.enqueue(new Callback() {

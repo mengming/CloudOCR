@@ -1,6 +1,7 @@
 package com.czm.cloudocr.Login;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.czm.cloudocr.model.LoginResult;
 import com.google.gson.Gson;
@@ -19,12 +20,14 @@ import okhttp3.Response;
 
 public class LoginPresenter implements LoginContract.Presenter {
 
+    private static final String TAG = "LoginPresenter";
     private Context mContext;
     private LoginContract.View mView;
 
     public LoginPresenter(Context context, LoginContract.View view) {
         mContext = context;
         mView = view;
+        mView.setPresenter(this);
     }
 
     @Override
@@ -40,10 +43,11 @@ public class LoginPresenter implements LoginContract.Presenter {
             public void onResponse(Call call, Response response) throws IOException {
                 Gson gson = new Gson();
                 LoginResult result = gson.fromJson(response.body().string(), LoginResult.class);
+                Log.d(TAG, "onResponse: " + result.toString());
                 if (result.getStatus().equals("OK")) {
                     mView.success(result.getNote());
-                } else {
-                    mView.error(result.getNote());
+                } else if (result.getStatus().equals("PW") || result.getStatus().equals("NoUser")){
+                    mView.error(result.getStatus(), result.getNote());
                 }
             }
         });
@@ -65,7 +69,7 @@ public class LoginPresenter implements LoginContract.Presenter {
                 if (result.getStatus().equals("OK")) {
                     mView.success(result.getNote());
                 } else {
-                    mView.error(result.getNote());
+                    mView.error(result.getStatus(), result.getNote());
                 }
             }
         });
@@ -75,7 +79,7 @@ public class LoginPresenter implements LoginContract.Presenter {
         OkHttpClient client = new OkHttpClient();
         MultipartBody.Builder builder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
-                .addFormDataPart("account", account)
+                .addFormDataPart("username", account)
                 .addFormDataPart("password", password);
         RequestBody requestBody = builder.build();
         Request request = new Request.Builder()

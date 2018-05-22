@@ -40,6 +40,8 @@
             android:theme="@style/Base.Theme.AppCompat" />
         <activity android:name=".TextResult.TextResultActivity" />
         <activity android:name=".Login.LoginActivity" />
+        <activity android:name=".Settings.SettingsActivity" />
+        <activity android:name=".Translate.TranslateActivity"></activity>
     </application>
 
 </manifest>

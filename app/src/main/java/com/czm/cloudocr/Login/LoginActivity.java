@@ -115,12 +115,6 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     public void loading() {
         mProgressDialog = SystemUtils.waitingDialog(this, "登录中");
         mProgressDialog.show();
-//        mHandler.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                success("登录成功");
-//            }
-//        }, 3000);
     }
 
     @Override
@@ -136,12 +130,17 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     }
 
     @Override
-    public void error(String message) {
+    public void error(final String status, final String message) {
         mProgressDialog.setMessage(message);
         mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 mProgressDialog.dismiss();
+                if (status.equals("PW")) {
+                    mPasswordInput.setError(message);
+                } else if (status.equals("NoUser")) {
+                    mAccountInput.setError(message);
+                }
             }
         }, 1000);
     }

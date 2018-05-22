@@ -10,5 +10,6 @@
     <string name="hint_account">请输入10位以内账号</string>
     <string name="login">登录</string>
     <string name="register">注册</string>
+    <string name="translate">翻译</string>
 
 </resources>

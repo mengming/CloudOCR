@@ -19,4 +19,12 @@ public class LoginResult {
     public void setNote(String note) {
         this.note = note;
     }
+
+    @Override
+    public String toString() {
+        return "LoginResult{" +
+                "status='" + status + '\'' +
+                ", note='" + note + '\'' +
+                '}';
+    }
 }

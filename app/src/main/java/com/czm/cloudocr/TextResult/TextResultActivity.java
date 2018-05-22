@@ -2,6 +2,7 @@ package com.czm.cloudocr.TextResult;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
@@ -18,6 +19,7 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.czm.cloudocr.R;
+import com.czm.cloudocr.Translate.TranslateActivity;
 import com.czm.cloudocr.model.PhotoResult;
 import com.czm.cloudocr.util.SystemUtils;
 
@@ -25,14 +27,16 @@ public class TextResultActivity extends AppCompatActivity implements Toolbar.OnM
 
     private static final String TAG = "TextResultActivity";
     private TextResultContract.Presenter mPresenter;
-    private PhotoResult mPhotoResult;
+    private Handler mHandler = new Handler();
     private EditText mEditText;
     private ImageView mImageView;
     private ProgressDialog mProgressDialog;
     private ConstraintSet resizeConstraintSet = new ConstraintSet();
     private ConstraintSet resetConstraintSet = new ConstraintSet();
     private ConstraintLayout mConstraintLayout;
+
     private Boolean compareFlag = false;
+    private PhotoResult mPhotoResult;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +74,11 @@ public class TextResultActivity extends AppCompatActivity implements Toolbar.OnM
                 break;
             case R.id.text_save:
                 mPresenter.updateText(mEditText.getText().toString(), mPhotoResult.getId());
+                break;
+            case R.id.text_translate:
+                Intent intent = new Intent(TextResultActivity.this, TranslateActivity.class);
+                intent.putExtra("from_text", mEditText.getText().toString());
+                startActivity(intent);
                 break;
         }
 
@@ -109,13 +118,13 @@ public class TextResultActivity extends AppCompatActivity implements Toolbar.OnM
 
     @Override
     public void updated() {
+        Log.d(TAG, "updated: ");
         mProgressDialog.setMessage("云端同步成功");
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
+        mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
+                Log.d(TAG, "run: dismiss");
                 mProgressDialog.dismiss();
-                finish();
             }
         },1000);
     }

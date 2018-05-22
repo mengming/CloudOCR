@@ -8,7 +8,7 @@ public interface LoginContract {
     interface View extends BaseView<Presenter>{
         void loading();
         void success(String message);
-        void error(String message);
+        void error(String status, String message);
     }
 
     interface Presenter{
