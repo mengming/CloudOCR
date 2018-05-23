@@ -126,6 +126,20 @@ public class TextResultActivity extends AppCompatActivity implements Toolbar.OnM
             public void run() {
                 Log.d(TAG, "run: dismiss");
                 mProgressDialog.dismiss();
+                finish();
+            }
+        },1000);
+    }
+
+    @Override
+    public void netError() {
+        mProgressDialog.setMessage("云端同步失败，请检查网络连接再手动同步");
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Log.d(TAG, "run: dismiss");
+                mProgressDialog.dismiss();
+                finish();
             }
         },1000);
     }

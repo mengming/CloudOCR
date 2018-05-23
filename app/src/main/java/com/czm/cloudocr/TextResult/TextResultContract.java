@@ -8,6 +8,7 @@ public interface TextResultContract {
         void showText(PhotoResult photoResult);
         void waiting();
         void updated();
+        void netError();
         void saveDialog();
         void comparePic();
     }

@@ -40,7 +40,7 @@
     <TextView
         android:id="@+id/item_history_date"
         android:layout_width="0dp"
-        android:layout_height="20dp"
+        android:layout_height="0dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginLeft="8dp"
@@ -49,7 +49,19 @@
         android:layout_marginTop="10dp"
         android:text="TextView"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/item_history_cloud"
         app:layout_constraintStart_toEndOf="@+id/item_history_photo"
         app:layout_constraintTop_toBottomOf="@+id/item_history_text" />
+
+    <ImageView
+        android:id="@+id/item_history_cloud"
+        android:visibility="invisible"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/ic_cloud" />
 </android.support.constraint.ConstraintLayout>

@@ -1,7 +1,10 @@
 package com.czm.cloudocr.Settings;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
@@ -14,15 +17,18 @@ import android.widget.Toast;
 
 import com.czm.cloudocr.Login.LoginActivity;
 import com.czm.cloudocr.R;
+import com.czm.cloudocr.util.SystemUtils;
 
 public class SettingsActivity extends AppCompatActivity implements SettingsContract.View,
         View.OnClickListener, CompoundButton.OnCheckedChangeListener{
 
-    private CardView accountCard, uploadCard;
+    private CardView accountCard, uploadCard, downloadCard;
     private Switch passwordSwitch, cloudSwitch;
     private TextView accountText;
+    private ProgressDialog mProgressDialog;
 
     private SettingsContract.Presenter mPresenter;
+    private Handler mHandler = new Handler();
 
     private String account;
 
@@ -41,11 +47,12 @@ public class SettingsActivity extends AppCompatActivity implements SettingsContr
         passwordSwitch = findViewById(R.id.settings_password_switch);
         cloudSwitch = findViewById(R.id.settings_cloud_switch);
         accountText = findViewById(R.id.settings_account_tv);
+        downloadCard = findViewById(R.id.settings_download_card);
         accountCard.setOnClickListener(this);
         uploadCard.setOnClickListener(this);
         passwordSwitch.setOnCheckedChangeListener(this);
         cloudSwitch.setOnCheckedChangeListener(this);
-
+        downloadCard.setOnClickListener(this);
         if ((account = getSharedPreferences("settings", MODE_PRIVATE).getString("account","")).equals("")){
             passwordSwitch.setChecked(false);
         } else {
@@ -88,6 +95,9 @@ public class SettingsActivity extends AppCompatActivity implements SettingsContr
             case R.id.settings_upload_card:
                 mPresenter.uploadAll();
                 break;
+            case R.id.settings_download_card:
+                mPresenter.downloadAll(account);
+                break;
         }
     }
 
@@ -122,7 +132,31 @@ public class SettingsActivity extends AppCompatActivity implements SettingsContr
     }
 
     @Override
-    public void uploaded() {
-
+    public void waiting(String message) {
+        mProgressDialog = SystemUtils.waitingDialog(this, message);
+        mProgressDialog.show();
     }
+
+    @Override
+    public void success() {
+        mProgressDialog.setMessage("云端信息同步成功");
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mProgressDialog.dismiss();
+            }
+        }, 1000);
+    }
+
+    @Override
+    public void netError() {
+        mProgressDialog.setMessage("同步失败，请检查网络连接重试");
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mProgressDialog.dismiss();
+            }
+        }, 1000);
+    }
+
 }

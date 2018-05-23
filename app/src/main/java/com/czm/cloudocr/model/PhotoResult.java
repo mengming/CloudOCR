@@ -15,6 +15,8 @@ public class PhotoResult extends DataSupport implements Serializable{
     private String text;
     private String date;
 
+    private Boolean isCloud;
+
     public PhotoResult() {
     }
 
@@ -72,6 +74,14 @@ public class PhotoResult extends DataSupport implements Serializable{
         this.date = date;
     }
 
+    public Boolean getCloud() {
+        return isCloud;
+    }
+
+    public void setCloud(Boolean cloud) {
+        isCloud = cloud;
+    }
+
     @Override
     public String toString() {
         return "PhotoResult{" +
@@ -81,6 +91,7 @@ public class PhotoResult extends DataSupport implements Serializable{
                 ", rootUri='" + rootUri + '\'' +
                 ", text='" + text + '\'' +
                 ", date='" + date + '\'' +
+                ", isCloud=" + isCloud +
                 '}';
     }
 }

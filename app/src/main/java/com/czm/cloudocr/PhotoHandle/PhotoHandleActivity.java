@@ -1,10 +1,12 @@
 package com.czm.cloudocr.PhotoHandle;
 
+import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,6 +23,7 @@ import com.czm.cloudocr.MainActivity;
 import com.czm.cloudocr.R;
 import com.czm.cloudocr.TextResult.TextResultActivity;
 import com.czm.cloudocr.model.PhotoResult;
+import com.czm.cloudocr.util.SystemUtils;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.io.File;
@@ -31,8 +35,10 @@ public class PhotoHandleActivity extends AppCompatActivity implements View.OnCli
     private Uri imgUri;
     private Button btnOcr;
     private TextView tvOcr;
+    private ProgressDialog mProgressDialog;
 
     private PhotoHandleContract.Presenter mPresenter;
+    private Handler mHandler = new Handler();
     private boolean flag;  //是否已经识别过
     private PhotoResult mPhotoResult;
 
@@ -109,9 +115,7 @@ public class PhotoHandleActivity extends AppCompatActivity implements View.OnCli
                 break;
             case R.id.handle_ocr_btn :
                 if (flag) {
-                    Intent intent = new Intent(this, TextResultActivity.class);
-                    intent.putExtra("photo_result", mPhotoResult);
-                    startActivity(intent);
+                    showText(mPhotoResult);
                 } else {
                     mPresenter.compressPic(imgUri);
                 }
@@ -123,6 +127,23 @@ public class PhotoHandleActivity extends AppCompatActivity implements View.OnCli
     }
 
     @Override
+    public void waiting() {
+        mProgressDialog = SystemUtils.waitingDialog(this, "正在识别中...");
+        mProgressDialog.show();
+    }
+
+    @Override
+    public void ocrError() {
+        mProgressDialog.setMessage("识别失败，请检查网络连接或重试");
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mProgressDialog.dismiss();
+            }
+        }, 1000);
+    }
+
+    @Override
     public void showImage(Uri uri) {
         Glide.with(this)
                 .load(uri)
@@ -130,10 +151,18 @@ public class PhotoHandleActivity extends AppCompatActivity implements View.OnCli
     }
 
     @Override
-    public void showText(PhotoResult result) {
-        Intent intent = new Intent(this, TextResultActivity.class);
-        intent.putExtra("photo_result", result);
-        startActivity(intent);
+    public void showText(final PhotoResult result) {
+        mProgressDialog.setMessage("识别成功");
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mProgressDialog.dismiss();
+                Intent intent = new Intent(PhotoHandleActivity.this, TextResultActivity.class);
+                intent.putExtra("photo_result", result);
+                startActivity(intent);
+                finish();
+            }
+        }, 1000);
     }
 
     @Override

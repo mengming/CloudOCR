@@ -59,6 +59,7 @@ public class PhotoHandlePresenter implements PhotoHandleContract.Presenter {
 
     @Override
     public void compressPic(Uri uri) {
+        mPhotoHandleView.waiting();
         try {
             InputStream is = mContext.getContentResolver().openInputStream(uri);
             Bitmap bitmap = BitmapFactory.decodeStream(is);
@@ -139,6 +140,7 @@ public class PhotoHandlePresenter implements PhotoHandleContract.Presenter {
                     PhotoResult result = gson.fromJson(string, PhotoResult.class);
                     result.setUri(file.toURI().toString());
                     result.setRootUri(uri.toString());
+                    result.setCloud(true);
                     savePic(result);
                     Log.d(TAG, "onResponse: " + result.toString());
                 }

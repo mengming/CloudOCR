@@ -4,10 +4,13 @@ import com.czm.cloudocr.BaseView;
 
 public interface SettingsContract {
     interface View extends BaseView<Presenter>{
-        void uploaded();
+        void waiting(String message);
+        void success();
+        void netError();
     }
 
     interface Presenter{
         void uploadAll();
+        void downloadAll(String account);
     }
 }

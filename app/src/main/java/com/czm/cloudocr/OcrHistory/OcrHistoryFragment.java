@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ public class OcrHistoryFragment extends Fragment implements OcrHistoryContract.V
     private RecyclerView mRecyclerView;
     private OcrHistoryContract.Presenter mPresenter;
     private OcrHistoryAdapter mOcrHistoryAdapter;
+    private static final String TAG = "OcrHistoryFragment";
     private Handler mHandler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -57,6 +59,7 @@ public class OcrHistoryFragment extends Fragment implements OcrHistoryContract.V
     @Override
     public void onResume() {
         super.onResume();
+        Log.d(TAG, "onResume: ");
         mPresenter.loadHistory(mHandler);
     }
 

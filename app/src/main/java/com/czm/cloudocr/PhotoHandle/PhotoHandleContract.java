@@ -10,6 +10,8 @@ import java.io.IOException;
 
 public interface PhotoHandleContract {
     interface View extends BaseView<Presenter>{
+        void waiting();
+        void ocrError();
         void showImage(Uri uri);
         void showText(PhotoResult result);
         void openPdf(String path);

@@ -33,11 +33,8 @@ public class TextResultPresenter implements TextResultContract.Presenter {
     }
 
     @Override
-    public void updateText(String text, int id) {
+    public void updateText(final String text, final int id) {
         mTextResultView.waiting();
-        ContentValues values = new ContentValues();
-        values.put("text", text);
-        DataSupport.update(PhotoResult.class, values, id);
         JsonArray array = new JsonArray();
         JsonObject object = new JsonObject();
         object.addProperty("id", String.valueOf(id));
@@ -55,12 +52,20 @@ public class TextResultPresenter implements TextResultContract.Presenter {
         call.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-
+                mTextResultView.netError();
+                ContentValues values = new ContentValues();
+                values.put("text", text);
+                values.put("isCloud", false);
+                DataSupport.update(PhotoResult.class, values, id);
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 mTextResultView.updated();
+                ContentValues values = new ContentValues();
+                values.put("text", text);
+                values.put("isCloud", true);
+                DataSupport.update(PhotoResult.class, values, id);
             }
         });
     }

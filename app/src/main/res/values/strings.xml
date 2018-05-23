@@ -15,5 +15,6 @@
     <string name="auto_login">保存用户并自动登录</string>
     <string name="upload_history">上传未同步的历史信息</string>
     <string name="auto_cloud">自动同步历史信息</string>
+    <string name="download_history">下载云端历史记录</string>
 
 </resources>

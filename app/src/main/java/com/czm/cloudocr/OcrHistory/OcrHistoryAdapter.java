@@ -51,6 +51,11 @@ public class OcrHistoryAdapter extends RecyclerView.Adapter<OcrHistoryAdapter.Hi
                 mContext.startActivity(intent);
             }
         });
+        if (result.getCloud()) {
+            holder.mCloudFlag.setVisibility(View.INVISIBLE);
+        } else {
+            holder.mCloudFlag.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -62,11 +67,13 @@ public class OcrHistoryAdapter extends RecyclerView.Adapter<OcrHistoryAdapter.Hi
         ImageView mImageView;
         TextView mTextView;
         TextView mDateView;
+        ImageView mCloudFlag;
         public HistoryViewHolder(View itemView) {
             super(itemView);
             mImageView = itemView.findViewById(R.id.item_history_photo);
             mTextView = itemView.findViewById(R.id.item_history_text);
             mDateView = itemView.findViewById(R.id.item_history_date);
+            mCloudFlag = itemView.findViewById(R.id.item_history_cloud);
         }
     }
 }
