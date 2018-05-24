@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.czm.cloudocr.model.TransResult;
 import com.czm.cloudocr.util.SystemUtils;
+import static com.czm.cloudocr.util.MyConstConfig.*;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -20,11 +21,6 @@ public class TranslatePresenter implements TranslateContract.Presenter {
 
     private TranslateContract.View mTranslateView;
     private Context mContext;
-
-    private static final String BAIDU_TRANS_URL = "http://api.fanyi.baidu.com/api/trans/vip/translate";
-    private static final String APPID = "20180521000163629";
-    private static final String SALT = "1435660288";
-    private static final String KEY = "EPas6azGPgb7dc3xlDqo";
     private static final String TAG = "TranslatePresenter";
 
     public TranslatePresenter(TranslateContract.View translateView, Context context) {
@@ -36,7 +32,7 @@ public class TranslatePresenter implements TranslateContract.Presenter {
     @Override
     public void send(String text) {
         String spliceStr = null;
-        spliceStr = APPID + text + SALT + KEY;
+        spliceStr = BAIDU_TRANS_APPID + text + BAIDU_TRANS_SALT + BAIDU_TRANS_KEY;
         String mdStr = SystemUtils.md5(spliceStr);
         Log.d(TAG, "send: spliceStr = " + spliceStr);
         Log.d(TAG, "send: md5 = " + mdStr);
@@ -46,8 +42,8 @@ public class TranslatePresenter implements TranslateContract.Presenter {
                 .addFormDataPart("q", text)
                 .addFormDataPart("from", "zh")
                 .addFormDataPart("to", "en")
-                .addFormDataPart("appid", APPID)
-                .addFormDataPart("salt",SALT)
+                .addFormDataPart("appid", BAIDU_TRANS_APPID)
+                .addFormDataPart("salt",BAIDU_TRANS_SALT)
                 .addFormDataPart("sign", mdStr);
         Request request = new Request.Builder()
                 .url(BAIDU_TRANS_URL)

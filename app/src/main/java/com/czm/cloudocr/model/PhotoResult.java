@@ -20,10 +20,13 @@ public class PhotoResult extends DataSupport implements Serializable{
     public PhotoResult() {
     }
 
-    public PhotoResult(String uri, String rootUri, String text) {
+    public PhotoResult(String remoteId, String uri, String rootUri, String text, String date, Boolean isCloud) {
+        this.remoteId = remoteId;
         this.uri = uri;
         this.rootUri = rootUri;
         this.text = text;
+        this.date = date;
+        this.isCloud = isCloud;
     }
 
     public int getId() {

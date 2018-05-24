@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -28,17 +29,21 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.czm.cloudocr.Login.LoginActivity;
 import com.czm.cloudocr.OcrHistory.OcrHistoryFragment;
 import com.czm.cloudocr.PhotoHandle.PhotoHandleActivity;
 import com.czm.cloudocr.PhotoSelect.PhotoSelectFragment;
 import com.czm.cloudocr.Settings.SettingsActivity;
+import com.czm.cloudocr.model.HistoryResult;
 import com.czm.cloudocr.widget.MyViewPager;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.czm.cloudocr.util.MyConstConfig.TAKE_PHOTO;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -49,13 +54,14 @@ public class MainActivity extends AppCompatActivity {
     private ImageView mArrow;
 
     private ArrayList<Fragment> mFragments;
+    private PhotoSelectFragment mPhotoSelectFragment;
     private List<String> mDirs = new ArrayList<>();
     private ArrayAdapter<String> mDirAdapter;
     private Uri imageUri;
 
-    public static final int TAKE_PHOTO = 1;
     private int lastFragmentIndex = 0;
     private int lastPathIndex = 0;
+    private long[] mHits = new long[3];
 
     public Handler mHandler = new Handler(){
         @Override
@@ -75,10 +81,21 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = findViewById(R.id.main_toolbar);
+        toolbar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                System.arraycopy(mHits, 1, mHits, 0, mHits.length - 1);
+                mHits[mHits.length - 1] = SystemClock.uptimeMillis();
+                if (mHits[0] >= (SystemClock.uptimeMillis() - 500)) {
+                    if (mHits.length >= 3) mPhotoSelectFragment.setAdvanced(true);
+                }
+            }
+        });
         setSupportActionBar(toolbar);
         mViewPager = findViewById(R.id.main_viewpager);
         mFragments = new ArrayList<>();
-        mFragments.add(new PhotoSelectFragment());
+        mPhotoSelectFragment = new PhotoSelectFragment();
+        mFragments.add(mPhotoSelectFragment);
         mFragments.add(new OcrHistoryFragment());
         final FragmentPagerAdapter mAdapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
             @Override
@@ -201,4 +218,7 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(intent, TAKE_PHOTO);
     }
 
+    public boolean isAdvanced(){
+        return mPhotoSelectFragment.isAdvanced();
+    }
 }

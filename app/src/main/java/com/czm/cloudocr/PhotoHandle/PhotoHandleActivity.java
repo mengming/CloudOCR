@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.czm.cloudocr.Login.LoginActivity;
 import com.czm.cloudocr.MainActivity;
 import com.czm.cloudocr.R;
 import com.czm.cloudocr.TextResult.TextResultActivity;
@@ -27,6 +28,9 @@ import com.czm.cloudocr.util.SystemUtils;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.io.File;
+import java.io.IOException;
+
+import static com.czm.cloudocr.util.MyConstConfig.LOGIN;
 
 public class PhotoHandleActivity extends AppCompatActivity implements View.OnClickListener, PhotoHandleContract.View{
 
@@ -40,6 +44,8 @@ public class PhotoHandleActivity extends AppCompatActivity implements View.OnCli
     private PhotoHandleContract.Presenter mPresenter;
     private Handler mHandler = new Handler();
     private boolean flag;  //是否已经识别过
+    private boolean delay;
+    private boolean advanced;
     private PhotoResult mPhotoResult;
 
     @Override
@@ -52,6 +58,7 @@ public class PhotoHandleActivity extends AppCompatActivity implements View.OnCli
         new PhotoHandlePresenter(this, this);
         Log.d(TAG, "uri = " + getIntent().getStringExtra("photo"));
         imgUri = Uri.parse(getIntent().getStringExtra("photo"));
+        advanced = getIntent().getBooleanExtra("advanced", false);
         flag = getIntent().getBooleanExtra("flag", false);
         showImage(imgUri);
         Button btnCrop = findViewById(R.id.handle_crop_btn);
@@ -72,19 +79,28 @@ public class PhotoHandleActivity extends AppCompatActivity implements View.OnCli
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
-            CropImage.ActivityResult result = CropImage.getActivityResult(data);
-            if (resultCode == RESULT_OK) {
-                imgUri = result.getUri();
-                showImage(imgUri);
-                flag = false;
-                btnOcr.setBackgroundResource(R.drawable.ic_ocr);
-                tvOcr.setText("文字识别");
-                mPhotoResult = null;
-                Log.d(TAG, "crop_uri = " + imgUri.toString());
-            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
-                Exception error = result.getError();
-            }
+        switch (requestCode) {
+            case CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE:
+                CropImage.ActivityResult result = CropImage.getActivityResult(data);
+                if (resultCode == RESULT_OK) {
+                    imgUri = result.getUri();
+                    showImage(imgUri);
+                    flag = false;
+                    btnOcr.setBackgroundResource(R.drawable.ic_ocr);
+                    tvOcr.setText("文字识别");
+                    mPhotoResult = null;
+                    Log.d(TAG, "crop_uri = " + imgUri.toString());
+                } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                    Exception error = result.getError();
+                }
+                break;
+            case LOGIN:
+                try {
+                    mPresenter.sendPic(imgUri, advanced);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
         }
     }
 
@@ -117,7 +133,20 @@ public class PhotoHandleActivity extends AppCompatActivity implements View.OnCli
                 if (flag) {
                     showText(mPhotoResult);
                 } else {
-                    mPresenter.compressPic(imgUri);
+                    if (getSharedPreferences("settings", MODE_PRIVATE).getString("account","").equals("")){
+                        Toast.makeText(this, "请先登录", Toast.LENGTH_SHORT).show();
+                        mHandler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                startActivityForResult(new Intent(PhotoHandleActivity.this, LoginActivity.class), LOGIN);
+                            }
+                        },1000);
+                    }
+                    try {
+                        mPresenter.sendPic(imgUri, advanced);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
                 break;
             case R.id.handle_pdf_btn :
@@ -134,13 +163,20 @@ public class PhotoHandleActivity extends AppCompatActivity implements View.OnCli
 
     @Override
     public void ocrError() {
-        mProgressDialog.setMessage("识别失败，请检查网络连接或重试");
-        mHandler.postDelayed(new Runnable() {
+        delay = true;
+        mHandler.post(new Runnable() {
             @Override
             public void run() {
-                mProgressDialog.dismiss();
+                if (delay) {
+                    mProgressDialog.setMessage("识别失败，请检查网络连接或重试");
+                    delay = false;
+                    mHandler.postDelayed(this, 1000);
+                } else {
+                    mProgressDialog.dismiss();
+                    mHandler.removeCallbacks(this);
+                }
             }
-        }, 1000);
+        });
     }
 
     @Override
@@ -152,17 +188,24 @@ public class PhotoHandleActivity extends AppCompatActivity implements View.OnCli
 
     @Override
     public void showText(final PhotoResult result) {
-        mProgressDialog.setMessage("识别成功");
-        mHandler.postDelayed(new Runnable() {
+        delay = true;
+        mHandler.post(new Runnable() {
             @Override
             public void run() {
-                mProgressDialog.dismiss();
-                Intent intent = new Intent(PhotoHandleActivity.this, TextResultActivity.class);
-                intent.putExtra("photo_result", result);
-                startActivity(intent);
-                finish();
+                if (delay) {
+                    mProgressDialog.setMessage("识别成功");
+                    delay = false;
+                    mHandler.postDelayed(this, 1000);
+                } else {
+                    mProgressDialog.dismiss();
+                    Intent intent = new Intent(PhotoHandleActivity.this, TextResultActivity.class);
+                    intent.putExtra("photo_result", result);
+                    startActivity(intent);
+                    finish();
+                    mHandler.removeCallbacks(this);
+                }
             }
-        }, 1000);
+        });
     }
 
     @Override

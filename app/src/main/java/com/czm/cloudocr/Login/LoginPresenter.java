@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.czm.cloudocr.model.LoginResult;
+import com.czm.cloudocr.util.MyConstConfig;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -34,7 +35,7 @@ public class LoginPresenter implements LoginContract.Presenter {
         postServer(account, password, "login").enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-
+                mView.error("net", "网络连接失败");
             }
 
             @Override
@@ -59,7 +60,7 @@ public class LoginPresenter implements LoginContract.Presenter {
         postServer(account, password, "regist").enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-
+                mView.error("net", "网络连接失败");
             }
 
             @Override
@@ -85,7 +86,7 @@ public class LoginPresenter implements LoginContract.Presenter {
                 .addFormDataPart("password", password);
         RequestBody requestBody = builder.build();
         Request request = new Request.Builder()
-                .url("http://192.168.199.234:8080/" + param)
+                .url(MyConstConfig.SERVER_URL + param)
                 .post(requestBody)
                 .build();
         return client.newCall(request);

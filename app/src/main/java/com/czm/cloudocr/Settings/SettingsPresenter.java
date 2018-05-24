@@ -2,20 +2,24 @@ package com.czm.cloudocr.Settings;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.os.Environment;
 import android.util.Log;
 
 import com.czm.cloudocr.model.HistoryResult;
 import com.czm.cloudocr.model.PhotoResult;
+import com.czm.cloudocr.util.MyConstConfig;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.litepal.crud.DataSupport;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.Call;
@@ -30,6 +34,9 @@ public class SettingsPresenter implements SettingsContract.Presenter {
     private SettingsContract.View mSettingsView;
     private Context mContext;
     private static final String TAG = "SettingsPresenter";
+    private OkHttpClient client = new OkHttpClient();
+    private List<HistoryResult> mHistoryResults;
+    private int downloadCount = 0;
 
     public SettingsPresenter(SettingsContract.View settingsView, Context context) {
         mSettingsView = settingsView;
@@ -41,6 +48,10 @@ public class SettingsPresenter implements SettingsContract.Presenter {
     public void uploadAll() {
         mSettingsView.waiting("正在上传中...");
         List<PhotoResult> results = DataSupport.where("isCloud = ?", "false").find(PhotoResult.class);
+        if (results.size() == 0) {
+            mSettingsView.success();
+            return;
+        }
         JsonArray array = new JsonArray();
         for (PhotoResult result : results) {
             JsonObject object = new JsonObject();
@@ -53,7 +64,7 @@ public class SettingsPresenter implements SettingsContract.Presenter {
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("UText", array.toString());
         Request request = new Request.Builder()
-                .url("http://192.168.199.234:8080/TxtUpdate")
+                .url(MyConstConfig.SERVER_URL + "TxtUpdate")
                 .post(builder.build())
                 .build();
         Call call = client.newCall(request);
@@ -76,12 +87,11 @@ public class SettingsPresenter implements SettingsContract.Presenter {
     @Override
     public void downloadAll(String account) {
         mSettingsView.waiting("正在同步中...");
-        OkHttpClient client = new OkHttpClient();
         MultipartBody.Builder builder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("username", account);
         final Request request = new Request.Builder()
-                .url("http://192.168.199.234:8080/imgSynchro")
+                .url(MyConstConfig.SERVER_URL + "imgSynchro")
                 .post(builder.build())
                 .build();
         Call call = client.newCall(request);
@@ -96,13 +106,59 @@ public class SettingsPresenter implements SettingsContract.Presenter {
                 JsonObject bigObj = new JsonParser().parse(response.body().string()).getAsJsonObject();
                 int count = bigObj.get("total").getAsInt();
                 Gson gson = new Gson();
+                mHistoryResults = new ArrayList<>();
                 for (int i = 0; i < count; i++) {
                     HistoryResult result = gson.fromJson(bigObj.getAsJsonObject(String.valueOf(i)).toString(), HistoryResult.class);
-                    Log.d(TAG, "onResponse: " + result.toString());
+                    if (DataSupport.where("remoteId = ?", result.getId()).find(PhotoResult.class).size() == 0) {
+                        mHistoryResults.add(result);
+                    }
                 }
-                mSettingsView.success();
+                if (mHistoryResults.size() != 0) {
+                    downloadCount = 0;
+                    downloadOne();
+                }
             }
         });
     }
 
+    private void downloadOne(){
+        final HistoryResult historyResult = mHistoryResults.get(downloadCount);
+        Request request = new Request.Builder().get()
+                .url(MyConstConfig.SERVER_URL + historyResult.getImgPath())
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                mSettingsView.netError();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                InputStream is = response.body().byteStream();
+                byte[] buf = new byte[2048];
+                int len = 0;
+                File file = new File(mContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES),
+                        "account" + DataSupport.count(PhotoResult.class) + ".jpg");
+                FileOutputStream fos = new FileOutputStream(file);
+                while((len = is.read(buf)) != -1){
+                    fos.write(buf,0,len);
+                }
+                fos.flush();
+                PhotoResult result = new PhotoResult(
+                        historyResult.getId(),
+                        file.toURI().toString(),
+                        file.toURI().toString(),
+                        historyResult.getImgText(),
+                        historyResult.getDate(),
+                        true);
+                result.saveThrows();
+                downloadCount++;
+                if (downloadCount == mHistoryResults.size()) {
+                    mSettingsView.success();
+                    return;
+                }
+                downloadOne();
+            }
+        });
+    }
 }

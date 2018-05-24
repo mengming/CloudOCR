@@ -18,8 +18,7 @@ public interface PhotoHandleContract {
     }
 
     interface Presenter{
-        void compressPic(Uri uri);
-        void sendPic(File file, Uri uri) throws IOException;
+        void sendPic(Uri uri, boolean advanced) throws IOException;
         void savePic(PhotoResult result);
         void savePdf(Uri uri);
     }

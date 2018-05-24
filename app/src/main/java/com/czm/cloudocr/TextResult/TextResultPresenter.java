@@ -2,9 +2,9 @@ package com.czm.cloudocr.TextResult;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.util.Log;
 
 import com.czm.cloudocr.model.PhotoResult;
+import com.czm.cloudocr.util.MyConstConfig;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -45,7 +45,7 @@ public class TextResultPresenter implements TextResultContract.Presenter {
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("UText", array.toString());
         Request request = new Request.Builder()
-                .url("http://192.168.199.234:8080/TxtUpdate")
+                .url(MyConstConfig.SERVER_URL + "TxtUpdate")
                 .post(builder.build())
                 .build();
         Call call = client.newCall(request);

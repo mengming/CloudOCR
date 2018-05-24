@@ -7,7 +7,8 @@ import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfPageEventHelper;
 import com.itextpdf.text.pdf.PdfWriter;
 
-import static com.czm.cloudocr.PhotoHandle.PhotoHandlePresenter.BORDER_WIDTH;
+import static com.czm.cloudocr.util.MyConstConfig.BORDER_WIDTH;
+
 
 public class PdfBackground extends PdfPageEventHelper {
     @Override

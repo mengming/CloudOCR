@@ -1,5 +1,6 @@
 package com.czm.cloudocr.PhotoSelect;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -16,6 +17,7 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.czm.cloudocr.GlideApp;
+import com.czm.cloudocr.MainActivity;
 import com.czm.cloudocr.PhotoHandle.PhotoHandleActivity;
 import com.czm.cloudocr.R;
 import com.czm.cloudocr.model.PhotoResult;
@@ -35,11 +37,13 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.ImageViewHol
     private Context mContext;
     private List<String> mUrls;
     private PhotoSelectContract.Presenter mPresenter;
+    private MainActivity mActivity;
 
-    public PhotoAdapter(Context context, List<String> urls, PhotoSelectContract.Presenter presenter) {
+    public PhotoAdapter(Context context, Activity activity, List<String> urls, PhotoSelectContract.Presenter presenter) {
         mContext = context;
         mUrls = urls;
         mPresenter = presenter;
+        mActivity = (MainActivity) activity;
     }
 
     @NonNull
@@ -67,6 +71,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.ImageViewHol
                 Intent intent = new Intent(mContext, PhotoHandleActivity.class);
                 Uri uri = Uri.fromFile(new File(mUrls.get(position)));
                 PhotoResult result = mPresenter.checkPhoto(uri);
+                intent.putExtra("advanced", mActivity.isAdvanced());
                 intent.putExtra("flag", result != null);
                 intent.putExtra("photo_result", result);
                 intent.putExtra("photo", uri.toString());

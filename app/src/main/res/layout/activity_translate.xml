@@ -78,7 +78,7 @@
     <EditText
         android:id="@+id/trans_from_et"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="171dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginLeft="8dp"
@@ -87,13 +87,14 @@
         android:layout_marginTop="8dp"
         android:background="@color/white"
         android:gravity="top"
-        app:layout_constraintBottom_toTopOf="@+id/guideline"
+        android:padding="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/trans_guideline_center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/trans_to_img" />
 
     <android.support.constraint.Guideline
-        android:id="@+id/guideline"
+        android:id="@+id/trans_guideline_center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -111,13 +112,14 @@
         android:layout_marginTop="8dp"
         android:background="@color/white"
         android:gravity="top"
-        app:layout_constraintBottom_toTopOf="@+id/guideline2"
+        android:padding="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/trans_guideline_bottom"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline" />
+        app:layout_constraintTop_toTopOf="@+id/trans_guideline_center" />
 
     <android.support.constraint.Guideline
-        android:id="@+id/guideline2"
+        android:id="@+id/trans_guideline_bottom"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -137,14 +139,14 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline2" />
+        app:layout_constraintTop_toTopOf="@+id/trans_guideline_bottom" />
 
     <ImageView
         android:layout_width="10dp"
         android:layout_height="10dp"
-        app:layout_constraintBottom_toTopOf="@+id/guideline"
+        app:layout_constraintBottom_toTopOf="@+id/trans_guideline_center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline"
+        app:layout_constraintTop_toTopOf="@+id/trans_guideline_center"
         app:srcCompat="@drawable/ic_drop_black" />
 </android.support.constraint.ConstraintLayout>

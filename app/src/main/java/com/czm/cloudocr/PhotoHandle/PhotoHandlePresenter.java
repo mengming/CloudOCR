@@ -7,9 +7,8 @@ import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 
-import com.czm.cloudocr.PhotoSelect.PhotoSelectFragment;
 import com.czm.cloudocr.model.PhotoResult;
-import com.czm.cloudocr.util.HttpUtils;
+import com.czm.cloudocr.util.MyConstConfig;
 import com.czm.cloudocr.util.PdfBackground;
 import com.czm.cloudocr.util.SystemUtils;
 import com.google.gson.Gson;
@@ -23,16 +22,13 @@ import com.itextpdf.text.Image;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.pdf.PdfWriter;
 
-import org.json.JSONObject;
 import org.litepal.crud.DataSupport;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
@@ -44,12 +40,14 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import static android.content.Context.MODE_PRIVATE;
+import static com.czm.cloudocr.util.MyConstConfig.BORDER_WIDTH;
+
 public class PhotoHandlePresenter implements PhotoHandleContract.Presenter {
 
     private static final String TAG = "PhotoHandlePresenter";
     private PhotoHandleContract.View mPhotoHandleView;
     private Context mContext;
-    public static final int BORDER_WIDTH = 10;
 
     public PhotoHandlePresenter(PhotoHandleContract.View photoHandleView, Context context) {
         mPhotoHandleView = photoHandleView;
@@ -57,45 +55,47 @@ public class PhotoHandlePresenter implements PhotoHandleContract.Presenter {
         mPhotoHandleView.setPresenter(this);
     }
 
-    @Override
-    public void compressPic(Uri uri) {
-        mPhotoHandleView.waiting();
+    private File compressPic(Uri uri) {
         try {
             InputStream is = mContext.getContentResolver().openInputStream(uri);
             Bitmap bitmap = BitmapFactory.decodeStream(is);
             File file = new File(mContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES),
-                    "account" + DataSupport.count(PhotoResult.class) + ".jpg");
+                    mContext.getSharedPreferences("settings", MODE_PRIVATE).getString("account","")
+                            + "_"+ DataSupport.count(PhotoResult.class) + ".jpg");
             Log.d(TAG, "compressPic: uri=" + file.toURI().toString());
-            Bitmap mBitmap = SystemUtils.compressImage(bitmap, file);
+            SystemUtils.compressImage(bitmap, file);
             Log.d(TAG, "compress:" + DataSupport.count(PhotoResult.class));
             Log.d(TAG, "compressPic: " + file.length()/1024 + "kb");
-            sendPic(file, uri);
+            return file;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+        return null;
     }
 
     @Override
-    public void sendPic(final File file, final Uri uri) throws IOException{
+    public void sendPic(final Uri uri, boolean advanced) throws IOException{
+        Log.d(TAG, "sendPic: advanced = " + advanced);
+        mPhotoHandleView.waiting();
+        final File file = compressPic(uri);
+        if (file == null) return;
         OkHttpClient client = new OkHttpClient.Builder()
                 .readTimeout(20, TimeUnit.SECONDS).build();
         MultipartBody.Builder builder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("myFile", file.getName(),
                         RequestBody.create(MediaType.parse("image/png"), file))
-                .addFormDataPart("username", "mengming");
+                .addFormDataPart("username", mContext.getSharedPreferences("settings", MODE_PRIVATE).getString("account",""));
         RequestBody requestBody = builder.build();
         final Request request = new Request.Builder()
-                .url("http://192.168.199.234:8080/imgUpload")
+                .url(MyConstConfig.SERVER_URL + (advanced ? "imgUploadApi": "imgUpload"))
                 .post(requestBody)
                 .build();
         Call call = client.newCall(request);
         call.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                Log.d(TAG, "onFailure: e = " + e.getMessage());
+                mPhotoHandleView.ocrError();
             }
 
             @Override

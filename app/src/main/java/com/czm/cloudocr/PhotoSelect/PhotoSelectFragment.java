@@ -47,9 +47,7 @@ public class PhotoSelectFragment extends Fragment implements PhotoSelectContract
 
     private RecyclerView mRecyclerView;
     public static PhotoSelectContract.Presenter mPresenter;
-    private List<String> mUrls = new ArrayList<>();
     private PhotoAdapter mPhotoAdapter;
-    private boolean sIsScrolling;
     private Handler mainHandler;
     public Handler mHandler = new Handler(){
         @Override
@@ -59,6 +57,10 @@ public class PhotoSelectFragment extends Fragment implements PhotoSelectContract
             showPhotos((Photos) bundle.getSerializable("photos"));
         }
     };
+
+    private List<String> mUrls = new ArrayList<>();
+    private boolean sIsScrolling;
+    private boolean advanced = false;
 
     @Nullable
     @Override
@@ -93,7 +95,7 @@ public class PhotoSelectFragment extends Fragment implements PhotoSelectContract
             }
         });
         new PhotoSelectPresenter(getContext(),this);
-        mPhotoAdapter = new PhotoAdapter(getContext(), mUrls, mPresenter);
+        mPhotoAdapter = new PhotoAdapter(getContext(), getActivity(), mUrls, mPresenter);
         mRecyclerView.setAdapter(mPhotoAdapter);
         super.onActivityCreated(savedInstanceState);
 
@@ -195,5 +197,13 @@ public class PhotoSelectFragment extends Fragment implements PhotoSelectContract
                 .setCancelable(false)
                 .create()
                 .show();
+    }
+
+    public boolean isAdvanced() {
+        return advanced;
+    }
+
+    public void setAdvanced(boolean advanced) {
+        this.advanced = advanced;
     }
 }

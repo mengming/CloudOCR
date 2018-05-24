@@ -33,4 +33,6 @@ public class Photos implements Serializable{
     public void setUrls(ArrayList<String> urls) {
         this.urls = urls;
     }
+
+
 }

@@ -35,7 +35,8 @@ public class TextResultActivity extends AppCompatActivity implements Toolbar.OnM
     private ConstraintSet resetConstraintSet = new ConstraintSet();
     private ConstraintLayout mConstraintLayout;
 
-    private Boolean compareFlag = false;
+    private boolean delay;
+    private boolean compareFlag = false;
     private PhotoResult mPhotoResult;
 
     @Override
@@ -119,29 +120,40 @@ public class TextResultActivity extends AppCompatActivity implements Toolbar.OnM
 
     @Override
     public void updated() {
-        Log.d(TAG, "updated: ");
-        mProgressDialog.setMessage("云端同步成功");
-        mHandler.postDelayed(new Runnable() {
+        delay = true;
+        mHandler.post(new Runnable() {
             @Override
             public void run() {
-                Log.d(TAG, "run: dismiss");
-                mProgressDialog.dismiss();
-                finish();
+                if (delay) {
+                    mProgressDialog.setMessage("云端同步成功");
+                    delay = false;
+                    mHandler.postDelayed(this, 1000);
+                } else {
+                    mProgressDialog.dismiss();
+                    finish();
+                    mHandler.removeCallbacks(this);
+                }
             }
-        },1000);
+        });
     }
 
     @Override
     public void netError() {
-        mProgressDialog.setMessage("云端同步失败，请检查网络连接再手动同步");
-        mHandler.postDelayed(new Runnable() {
+        delay = true;
+        mHandler.post(new Runnable() {
             @Override
             public void run() {
-                Log.d(TAG, "run: dismiss");
-                mProgressDialog.dismiss();
-                finish();
+                if (delay) {
+                    mProgressDialog.setMessage("云端同步失败，请检查网络连接再手动同步");
+                    delay = false;
+                    mHandler.postDelayed(this, 1000);
+                } else {
+                    mProgressDialog.dismiss();
+                    finish();
+                    mHandler.removeCallbacks(this);
+                }
             }
-        },1000);
+        });
     }
 
     @Override

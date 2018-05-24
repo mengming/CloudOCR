@@ -31,7 +31,6 @@ public class OcrHistoryFragment extends Fragment implements OcrHistoryContract.V
             showHistory((List<PhotoResult>) msg.getData().getSerializable("results"));
         }
     };
-
     private List<PhotoResult> mPhotoResults = new ArrayList<>();
 
     public OcrHistoryFragment() {

@@ -2,7 +2,6 @@ package com.czm.cloudocr.Settings;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -17,7 +16,13 @@ import android.widget.Toast;
 
 import com.czm.cloudocr.Login.LoginActivity;
 import com.czm.cloudocr.R;
+import com.czm.cloudocr.model.HistoryResult;
 import com.czm.cloudocr.util.SystemUtils;
+
+import java.io.Serializable;
+import java.util.List;
+
+import static com.czm.cloudocr.util.MyConstConfig.LOGIN;
 
 public class SettingsActivity extends AppCompatActivity implements SettingsContract.View,
         View.OnClickListener, CompoundButton.OnCheckedChangeListener{
@@ -31,6 +36,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsContr
     private Handler mHandler = new Handler();
 
     private String account;
+    private boolean delay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +79,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsContr
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 0) {
+        if (requestCode == LOGIN) {
             String account = data.getStringExtra("account");
             if (!account.equals("")) {
                 accountText.setText(account);
@@ -89,7 +95,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsContr
             case R.id.settings_account_card:
                 if (!passwordSwitch.isChecked()) {
                     Intent intent = new Intent(SettingsActivity.this, LoginActivity.class);
-                    startActivityForResult(intent, 0);
+                    startActivityForResult(intent, LOGIN);
                 }
                 break;
             case R.id.settings_upload_card:
@@ -139,24 +145,38 @@ public class SettingsActivity extends AppCompatActivity implements SettingsContr
 
     @Override
     public void success() {
-        mProgressDialog.setMessage("云端信息同步成功");
-        mHandler.postDelayed(new Runnable() {
+        delay = true;
+        mHandler.post(new Runnable() {
             @Override
             public void run() {
-                mProgressDialog.dismiss();
+                if (delay) {
+                    mProgressDialog.setMessage("云端信息同步成功");
+                    delay = false;
+                    mHandler.postDelayed(this, 1000);
+                } else {
+                    mProgressDialog.dismiss();
+                    mHandler.removeCallbacks(this);
+                }
             }
-        }, 1000);
+        });
     }
 
     @Override
     public void netError() {
-        mProgressDialog.setMessage("同步失败，请检查网络连接重试");
-        mHandler.postDelayed(new Runnable() {
+        delay = true;
+        mHandler.post(new Runnable() {
             @Override
             public void run() {
-                mProgressDialog.dismiss();
+                if (delay) {
+                    mProgressDialog.setMessage("同步失败，请检查网络连接重试");
+                    delay = false;
+                    mHandler.postDelayed(this, 1000);
+                } else {
+                    mProgressDialog.dismiss();
+                    mHandler.removeCallbacks(this);
+                }
             }
-        }, 1000);
+        });
     }
 
 }
