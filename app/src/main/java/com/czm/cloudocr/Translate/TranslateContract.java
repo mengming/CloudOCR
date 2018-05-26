@@ -8,6 +8,6 @@ public interface TranslateContract {
     }
 
     interface Presenter{
-        void send(String text);
+        void send(String text, String from, String to);
     }
 }

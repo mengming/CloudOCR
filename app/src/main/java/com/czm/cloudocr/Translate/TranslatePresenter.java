@@ -30,7 +30,7 @@ public class TranslatePresenter implements TranslateContract.Presenter {
     }
 
     @Override
-    public void send(String text) {
+    public void send(String text, String from, String to) {
         String spliceStr = null;
         spliceStr = BAIDU_TRANS_APPID + text + BAIDU_TRANS_SALT + BAIDU_TRANS_KEY;
         String mdStr = SystemUtils.md5(spliceStr);
@@ -40,8 +40,8 @@ public class TranslatePresenter implements TranslateContract.Presenter {
         MultipartBody.Builder builder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("q", text)
-                .addFormDataPart("from", "zh")
-                .addFormDataPart("to", "en")
+                .addFormDataPart("from", from)
+                .addFormDataPart("to", to)
                 .addFormDataPart("appid", BAIDU_TRANS_APPID)
                 .addFormDataPart("salt",BAIDU_TRANS_SALT)
                 .addFormDataPart("sign", mdStr);

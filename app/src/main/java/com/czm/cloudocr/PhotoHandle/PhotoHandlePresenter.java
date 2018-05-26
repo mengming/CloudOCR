@@ -88,7 +88,7 @@ public class PhotoHandlePresenter implements PhotoHandleContract.Presenter {
                 .addFormDataPart("username", mContext.getSharedPreferences("settings", MODE_PRIVATE).getString("account",""));
         RequestBody requestBody = builder.build();
         final Request request = new Request.Builder()
-                .url(MyConstConfig.SERVER_URL + (advanced ? "imgUploadApi": "imgUpload"))
+                .url(MyConstConfig.SERVER_URL + (advanced ? "imgUploadAPI": "imgUpload"))
                 .post(requestBody)
                 .build();
         Call call = client.newCall(request);

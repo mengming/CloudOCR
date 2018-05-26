@@ -45,7 +45,7 @@ import java.util.List;
 
 import static com.czm.cloudocr.util.MyConstConfig.TAKE_PHOTO;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     private BottomNavigationView mBottomNavigationView;
     private MyViewPager mViewPager;
@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 System.arraycopy(mHits, 1, mHits, 0, mHits.length - 1);
                 mHits[mHits.length - 1] = SystemClock.uptimeMillis();
-                if (mHits[0] >= (SystemClock.uptimeMillis() - 500)) {
+                if (mHits[0] >= (SystemClock.uptimeMillis() - 1000)) {
                     if (mHits.length >= 3) mPhotoSelectFragment.setAdvanced(true);
                 }
             }
@@ -135,16 +135,8 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.navigation_pic:
                         mArrow.setVisibility(View.VISIBLE);
                         if (mDirs.size() != 0) mTitle.setText(mDirs.get(lastPathIndex));
-                        mTitle.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                if (mPopup.isShowing()) {
-                                    mPopup.dismiss();
-                                } else {
-                                    mPopup.showAsDropDown(mTitle, (mTitle.getWidth()-600)/2, 0);
-                                }
-                            }
-                        });
+                        mTitle.setOnClickListener(MainActivity.this);
+                        mArrow.setOnClickListener(MainActivity.this);
                         mViewPager.setCurrentItem(0);
                         return true;
                     case R.id.navigation_camera:
@@ -154,6 +146,7 @@ public class MainActivity extends AppCompatActivity {
                         mArrow.setVisibility(View.INVISIBLE);
                         mTitle.setText("识别历史");
                         mTitle.setOnClickListener(null);
+                        mArrow.setOnClickListener(null);
                         mViewPager.setCurrentItem(1);
                         return true;
                 }
@@ -220,5 +213,19 @@ public class MainActivity extends AppCompatActivity {
 
     public boolean isAdvanced(){
         return mPhotoSelectFragment.isAdvanced();
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.main_tv_path :
+            case R.id.main_arrow :
+                if (mPopup.isShowing()) {
+                    mPopup.dismiss();
+                } else {
+                    mPopup.showAsDropDown(mTitle, (mTitle.getWidth()-600)/2, 0);
+                }
+                break;
+        }
     }
 }

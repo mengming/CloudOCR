@@ -30,7 +30,7 @@
         app:layout_constraintGuide_percent="0.09" />
 
     <TextView
-        android:id="@+id/trans_from_tv"
+        android:id="@+id/trans_from_lan"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginBottom="8dp"
@@ -40,12 +40,14 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:background="@color/white"
-        android:text="TextView"
         android:gravity="center"
+        android:text="@string/select_language"
         app:layout_constraintBottom_toBottomOf="@+id/trans_to_img"
         app:layout_constraintEnd_toStartOf="@+id/trans_to_img"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/translate_guideline" />
+        app:layout_constraintTop_toTopOf="@+id/translate_guideline"
+        app:layout_constraintVertical_bias="0.0" />
 
     <ImageView
         android:id="@+id/trans_to_img"
@@ -58,7 +60,7 @@
         app:srcCompat="@drawable/ic_trans_to" />
 
     <TextView
-        android:id="@+id/trans_to_tv"
+        android:id="@+id/trans_to_lan"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginBottom="8dp"
@@ -68,7 +70,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:background="@color/white"
-        android:text="TextView"
+        android:text="@string/select_language"
         android:gravity="center"
         app:layout_constraintBottom_toBottomOf="@+id/trans_to_img"
         app:layout_constraintEnd_toEndOf="parent"
@@ -90,8 +92,10 @@
         android:padding="8dp"
         app:layout_constraintBottom_toTopOf="@+id/trans_guideline_center"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/trans_to_img" />
+        app:layout_constraintTop_toBottomOf="@+id/trans_to_img"
+        app:layout_constraintVertical_bias="1.0" />
 
     <android.support.constraint.Guideline
         android:id="@+id/trans_guideline_center"
