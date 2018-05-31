@@ -2,9 +2,12 @@ package com.czm.cloudocr.TextResult;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.util.Log;
 
 import com.czm.cloudocr.model.PhotoResult;
+import com.czm.cloudocr.model.WordResult;
 import com.czm.cloudocr.util.MyConstConfig;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -26,6 +29,8 @@ public class TextResultPresenter implements TextResultContract.Presenter {
     private TextResultContract.View mTextResultView;
     private Context mContext;
 
+    private OkHttpClient mClient;
+
     public TextResultPresenter(TextResultContract.View textResultView, Context context) {
         mTextResultView = textResultView;
         mContext = context;
@@ -40,7 +45,7 @@ public class TextResultPresenter implements TextResultContract.Presenter {
         object.addProperty("id", String.valueOf(id));
         object.addProperty("text", text);
         array.add(object);
-        OkHttpClient client = new OkHttpClient();
+        mClient = new OkHttpClient();
         MultipartBody.Builder builder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("UText", array.toString());
@@ -48,7 +53,7 @@ public class TextResultPresenter implements TextResultContract.Presenter {
                 .url(MyConstConfig.SERVER_URL + "TxtUpdate")
                 .post(builder.build())
                 .build();
-        Call call = client.newCall(request);
+        Call call = mClient.newCall(request);
         call.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -66,6 +71,36 @@ public class TextResultPresenter implements TextResultContract.Presenter {
                 values.put("text", text);
                 values.put("isCloud", true);
                 DataSupport.update(PhotoResult.class, values, id);
+            }
+        });
+    }
+
+    @Override
+    public void searchWord(String text) {
+        mTextResultView.showWordWindow();
+        mClient = new OkHttpClient();
+        MultipartBody.Builder builder = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("text", text.replaceAll("\n", " "))
+                .addFormDataPart("showapi_appid", MyConstConfig.SEARCH_WORD_APPID)
+                .addFormDataPart("showapi_sign", MyConstConfig.SEARCH_WORD_SIGN);
+        Request request = new Request.Builder()
+                .url(MyConstConfig.SEARCH_WORD_URL)
+                .post(builder.build())
+                .build();
+        Call call = mClient.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                Log.d(TAG, "onResponse: word");
+                Gson gson = new Gson();
+                WordResult result = gson.fromJson(response.body().string(), WordResult.class);
+                mTextResultView.refreshWords(result.getShowapi_res_body().getList());
             }
         });
     }

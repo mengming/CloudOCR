@@ -11,7 +11,8 @@
         android:title="@string/proofread" />
 
     <item android:id="@+id/text_save"
-        android:icon="@drawable/ic_comfirm"
+        android:icon="@drawable/ic_confirm"
         app:showAsAction="always"
         android:title="@string/save"/>
+
 </menu>

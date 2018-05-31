@@ -17,5 +17,6 @@
     <string name="auto_cloud">自动同步历史信息</string>
     <string name="download_history">下载云端历史记录</string>
     <string name="select_language">选择语言</string>
+    <string name="search">查找关键词</string>
 
 </resources>

@@ -12,4 +12,8 @@ public class MyConstConfig {
     public static final int LOGIN = 2;
 
     public static final int BORDER_WIDTH = 10;
+
+    public static final String SEARCH_WORD_URL = "http://route.showapi.com/941-1";
+    public static final String SEARCH_WORD_APPID = "66143";
+    public static final String SEARCH_WORD_SIGN = "0f14d77284364e0d990660c824b7e22d";
 }

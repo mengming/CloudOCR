@@ -36,6 +36,7 @@ import com.czm.cloudocr.OcrHistory.OcrHistoryFragment;
 import com.czm.cloudocr.PhotoHandle.PhotoHandleActivity;
 import com.czm.cloudocr.PhotoSelect.PhotoSelectFragment;
 import com.czm.cloudocr.Settings.SettingsActivity;
+import com.czm.cloudocr.TextResult.WordSearchDialog;
 import com.czm.cloudocr.model.HistoryResult;
 import com.czm.cloudocr.widget.MyViewPager;
 

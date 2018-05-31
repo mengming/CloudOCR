@@ -1,8 +1,11 @@
 package com.czm.cloudocr.TextResult;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
@@ -11,17 +14,29 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.czm.cloudocr.R;
 import com.czm.cloudocr.Translate.TranslateActivity;
 import com.czm.cloudocr.model.PhotoResult;
 import com.czm.cloudocr.util.SystemUtils;
+
+import java.util.List;
 
 public class TextResultActivity extends AppCompatActivity implements Toolbar.OnMenuItemClickListener, TextResultContract.View{
 
@@ -34,6 +49,7 @@ public class TextResultActivity extends AppCompatActivity implements Toolbar.OnM
     private ConstraintSet resizeConstraintSet = new ConstraintSet();
     private ConstraintSet resetConstraintSet = new ConstraintSet();
     private ConstraintLayout mConstraintLayout;
+    private Toolbar toolbar;
 
     private boolean delay;
     private boolean compareFlag = false;
@@ -44,12 +60,24 @@ public class TextResultActivity extends AppCompatActivity implements Toolbar.OnM
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_text_result);
 
-        Toolbar toolbar = findViewById(R.id.text_toolbar);
+        toolbar = findViewById(R.id.text_toolbar);
         toolbar.setTitle("识别结果");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setOnMenuItemClickListener(this);
         mEditText = findViewById(R.id.result_edittext);
+        mEditText.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_POINTER_2_DOWN && event.getPointerCount() == 2) {
+                    Log.d(TAG, "onTouch: 双指点击");
+                    InputMethodManager imm = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(mEditText.getWindowToken(), 0);
+                    mPresenter.searchWord(mPhotoResult.getText());
+                }
+                return false;
+            }
+        });
         mImageView = findViewById(R.id.iv_compare_pic);
         mConstraintLayout = findViewById(R.id.result_constraint);
         resetConstraintSet.clone(mConstraintLayout);
@@ -187,6 +215,23 @@ public class TextResultActivity extends AppCompatActivity implements Toolbar.OnM
             resizeConstraintSet.connect(R.id.iv_compare_pic, ConstraintSet.TOP, R.id.resize_guideline, ConstraintSet.BOTTOM);
             resizeConstraintSet.applyTo(mConstraintLayout);
         }
+    }
+
+    @Override
+    public void showWordWindow() {
+
+    }
+
+    @Override
+    public void refreshWords(final List<String> strings) {
+        Log.d(TAG, "refreshWords: " + strings.size());
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                WordSearchDialog dialog = new WordSearchDialog(TextResultActivity.this, R.style.TransparentDialog, strings);
+                dialog.show();
+            }
+        });
     }
 
     @Override

@@ -20,6 +20,6 @@ public interface PhotoHandleContract {
     interface Presenter{
         void sendPic(Uri uri, boolean advanced) throws IOException;
         void savePic(PhotoResult result);
-        void savePdf(Uri uri);
+        void savePdf(Uri uri, String name);
     }
 }
