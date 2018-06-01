@@ -60,7 +60,7 @@ public class PhotoSelectFragment extends Fragment implements PhotoSelectContract
 
     private List<String> mUrls = new ArrayList<>();
     private boolean sIsScrolling;
-    private boolean advanced = false;
+    private boolean advanced = true;
 
     @Nullable
     @Override

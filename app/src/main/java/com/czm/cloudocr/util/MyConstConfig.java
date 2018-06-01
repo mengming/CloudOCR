@@ -1,7 +1,7 @@
 package com.czm.cloudocr.util;
 
 public class MyConstConfig {
-    public static final String SERVER_URL = "http://192.168.199.234:8080/";
+    public static final String SERVER_URL = "http://123.207.124.140:8080/ocr/";
 
     public static final String BAIDU_TRANS_URL = "http://api.fanyi.baidu.com/api/trans/vip/translate";
     public static final String BAIDU_TRANS_APPID = "20180521000163629";

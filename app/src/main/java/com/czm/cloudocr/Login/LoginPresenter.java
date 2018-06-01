@@ -41,7 +41,9 @@ public class LoginPresenter implements LoginContract.Presenter {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 Gson gson = new Gson();
-                LoginResult result = gson.fromJson(response.body().string(), LoginResult.class);
+                String res = response.body().string();
+                Log.d(TAG, "onResponse: " + res);
+                LoginResult result = gson.fromJson(res, LoginResult.class);
                 Log.d(TAG, "onResponse: " + result.toString());
                 if (result.getStatus().equals("OK")) {
                     mContext.getSharedPreferences("settings", Context.MODE_PRIVATE)
