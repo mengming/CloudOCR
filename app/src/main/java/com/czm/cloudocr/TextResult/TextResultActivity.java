@@ -103,7 +103,7 @@ public class TextResultActivity extends AppCompatActivity implements Toolbar.OnM
                 comparePic();
                 break;
             case R.id.text_save:
-                mPresenter.updateText(mEditText.getText().toString(), mPhotoResult.getId());
+                mPresenter.updateText(mEditText.getText().toString(), mPhotoResult.getRemoteId());
                 break;
             case R.id.text_translate:
                 Intent intent = new Intent(TextResultActivity.this, TranslateActivity.class);
@@ -191,7 +191,7 @@ public class TextResultActivity extends AppCompatActivity implements Toolbar.OnM
                 .setPositiveButton("保存", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        mPresenter.updateText(mEditText.getText().toString(), mPhotoResult.getId());
+                        mPresenter.updateText(mEditText.getText().toString(), mPhotoResult.getRemoteId());
                     }
                 })
                 .setNegativeButton("放弃", new DialogInterface.OnClickListener() {

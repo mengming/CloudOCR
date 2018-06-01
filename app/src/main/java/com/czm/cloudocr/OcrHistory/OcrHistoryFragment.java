@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.czm.cloudocr.PhotoSelect.PhotoSelectFragment;
 import com.czm.cloudocr.R;
 import com.czm.cloudocr.model.PhotoResult;
 
@@ -66,6 +67,9 @@ public class OcrHistoryFragment extends Fragment implements OcrHistoryContract.V
     public void showHistory(List<PhotoResult> results) {
         mPhotoResults.clear();
         mPhotoResults.addAll(results);
+        for (PhotoResult result : results) {
+            Log.d(TAG, "showHistory: " + result.toString());
+        }
         mOcrHistoryAdapter.notifyDataSetChanged();
     }
 

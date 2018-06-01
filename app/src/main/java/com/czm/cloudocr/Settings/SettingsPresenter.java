@@ -103,7 +103,9 @@ public class SettingsPresenter implements SettingsContract.Presenter {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                JsonObject bigObj = new JsonParser().parse(response.body().string()).getAsJsonObject();
+                String res = response.body().string();
+                Log.d(TAG, "onResponse: " + res);
+                JsonObject bigObj = new JsonParser().parse(res).getAsJsonObject();
                 int count = bigObj.get("total").getAsInt();
                 Gson gson = new Gson();
                 mHistoryResults = new ArrayList<>();
@@ -122,6 +124,7 @@ public class SettingsPresenter implements SettingsContract.Presenter {
     }
 
     private void downloadOne(){
+        Log.d(TAG, "downloadOne: ");
         final HistoryResult historyResult = mHistoryResults.get(downloadCount);
         Request request = new Request.Builder().get()
                 .url(MyConstConfig.SERVER_URL + historyResult.getImgPath())
@@ -157,6 +160,7 @@ public class SettingsPresenter implements SettingsContract.Presenter {
                     mSettingsView.success();
                     return;
                 }
+                Log.d(TAG, "onResponse: downloaded");
                 downloadOne();
             }
         });

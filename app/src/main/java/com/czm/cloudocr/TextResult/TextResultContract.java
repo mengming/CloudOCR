@@ -18,7 +18,7 @@ public interface TextResultContract {
     }
 
     interface Presenter{
-        void updateText(String text, int id);
+        void updateText(String text, String id);
         void searchWord(String text);
     }
 }

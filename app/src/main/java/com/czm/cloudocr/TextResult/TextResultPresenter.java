@@ -2,6 +2,7 @@ package com.czm.cloudocr.TextResult;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 import com.czm.cloudocr.model.PhotoResult;
@@ -38,11 +39,11 @@ public class TextResultPresenter implements TextResultContract.Presenter {
     }
 
     @Override
-    public void updateText(final String text, final int id) {
+    public void updateText(final String text, final String id) {
         mTextResultView.waiting();
         JsonArray array = new JsonArray();
         JsonObject object = new JsonObject();
-        object.addProperty("id", String.valueOf(id));
+        object.addProperty("id", id);
         object.addProperty("text", text);
         array.add(object);
         mClient = new OkHttpClient();
@@ -61,16 +62,17 @@ public class TextResultPresenter implements TextResultContract.Presenter {
                 ContentValues values = new ContentValues();
                 values.put("text", text);
                 values.put("isCloud", false);
-                DataSupport.update(PhotoResult.class, values, id);
+                DataSupport.update(PhotoResult.class, values, Integer.parseInt(id));
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                Log.d(TAG, "onResponse: " + response.body().string());
                 mTextResultView.updated();
                 ContentValues values = new ContentValues();
                 values.put("text", text);
                 values.put("isCloud", true);
-                DataSupport.update(PhotoResult.class, values, id);
+                DataSupport.update(PhotoResult.class, values, Integer.parseInt(id));
             }
         });
     }
