@@ -118,6 +118,8 @@ public class SettingsPresenter implements SettingsContract.Presenter {
                 if (mHistoryResults.size() != 0) {
                     downloadCount = 0;
                     downloadOne();
+                } else {
+                    mSettingsView.success();
                 }
             }
         });

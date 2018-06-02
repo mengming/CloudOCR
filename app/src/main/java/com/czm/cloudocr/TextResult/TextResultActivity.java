@@ -218,11 +218,6 @@ public class TextResultActivity extends AppCompatActivity implements Toolbar.OnM
     }
 
     @Override
-    public void showWordWindow() {
-
-    }
-
-    @Override
     public void refreshWords(final List<String> strings) {
         Log.d(TAG, "refreshWords: " + strings.size());
         runOnUiThread(new Runnable() {

@@ -8,6 +8,7 @@ import com.czm.cloudocr.util.MyConstConfig;
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.nio.file.Path;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -31,53 +32,57 @@ public class LoginPresenter implements LoginContract.Presenter {
 
     @Override
     public void login(final String account, String password) throws IOException{
-        mView.loading();
-        postServer(account, password, "login").enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                mView.error("net", "网络连接失败");
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                Gson gson = new Gson();
-                String res = response.body().string();
-                Log.d(TAG, "onResponse: " + res);
-                LoginResult result = gson.fromJson(res, LoginResult.class);
-                Log.d(TAG, "onResponse: " + result.toString());
-                if (result.getStatus().equals("OK")) {
-                    mContext.getSharedPreferences("settings", Context.MODE_PRIVATE)
-                            .edit().putString("account", account).apply();
-                    mView.success(result.getNote());
-                } else if (result.getStatus().equals("PW") || result.getStatus().equals("NoUser")){
-                    mView.error(result.getStatus(), result.getNote());
+        if (isLeagle(account, password)) {
+            mView.loading();
+            postServer(account, password, "login").enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    mView.error("net", "网络连接失败");
                 }
-            }
-        });
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    Gson gson = new Gson();
+                    String res = response.body().string();
+                    Log.d(TAG, "onResponse: " + res);
+                    LoginResult result = gson.fromJson(res, LoginResult.class);
+                    Log.d(TAG, "onResponse: " + result.toString());
+                    if (result.getStatus().equals("OK")) {
+                        mContext.getSharedPreferences("settings", Context.MODE_PRIVATE)
+                                .edit().putString("account", account).apply();
+                        mView.success(result.getNote());
+                    } else if (result.getStatus().equals("PW") || result.getStatus().equals("NoUser")) {
+                        mView.error(result.getStatus(), result.getNote());
+                    }
+                }
+            });
+        }
     }
 
     @Override
     public void register(final String account, String password) throws IOException {
-        mView.loading();
-        postServer(account, password, "regist").enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                mView.error("net", "网络连接失败");
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                Gson gson = new Gson();
-                LoginResult result = gson.fromJson(response.body().string(), LoginResult.class);
-                if (result.getStatus().equals("OK")) {
-                    mContext.getSharedPreferences("settings", Context.MODE_PRIVATE)
-                            .edit().putString("account", account).apply();
-                    mView.success(result.getNote());
-                } else {
-                    mView.error(result.getStatus(), result.getNote());
+        if (isLeagle(account, password)) {
+            mView.loading();
+            postServer(account, password, "regist").enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    mView.error("net", "网络连接失败");
                 }
-            }
-        });
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    Gson gson = new Gson();
+                    LoginResult result = gson.fromJson(response.body().string(), LoginResult.class);
+                    if (result.getStatus().equals("OK")) {
+                        mContext.getSharedPreferences("settings", Context.MODE_PRIVATE)
+                                .edit().putString("account", account).apply();
+                        mView.success(result.getNote());
+                    } else {
+                        mView.error(result.getStatus(), result.getNote());
+                    }
+                }
+            });
+        }
     }
 
     private Call postServer(String account, String password, String param){
@@ -92,5 +97,16 @@ public class LoginPresenter implements LoginContract.Presenter {
                 .post(requestBody)
                 .build();
         return client.newCall(request);
+    }
+
+    private boolean isLeagle(String account, String password){
+        if (account.length() > 10) {
+            mView.illegal("账号长度不符合");
+            return false;
+        } else if (password.length() > 16 || password.length() < 8){
+            mView.illegal("密码长度不符合");
+            return false;
+        }
+        return true;
     }
 }

@@ -13,7 +13,6 @@ public interface TextResultContract {
         void netError();
         void saveDialog();
         void comparePic();
-        void showWordWindow();
         void refreshWords(List<String> strings);
     }
 

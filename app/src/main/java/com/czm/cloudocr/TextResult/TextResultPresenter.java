@@ -62,7 +62,8 @@ public class TextResultPresenter implements TextResultContract.Presenter {
                 ContentValues values = new ContentValues();
                 values.put("text", text);
                 values.put("isCloud", false);
-                DataSupport.update(PhotoResult.class, values, Integer.parseInt(id));
+                int localId = DataSupport.where("remoteId = ?", id).find(PhotoResult.class).get(0).getId();
+                DataSupport.update(PhotoResult.class, values, localId);
             }
 
             @Override
@@ -72,14 +73,14 @@ public class TextResultPresenter implements TextResultContract.Presenter {
                 ContentValues values = new ContentValues();
                 values.put("text", text);
                 values.put("isCloud", true);
-                DataSupport.update(PhotoResult.class, values, Integer.parseInt(id));
+                int localId = DataSupport.where("remoteId = ?", id).find(PhotoResult.class).get(0).getId();
+                DataSupport.update(PhotoResult.class, values, localId);
             }
         });
     }
 
     @Override
     public void searchWord(String text) {
-        mTextResultView.showWordWindow();
         mClient = new OkHttpClient();
         MultipartBody.Builder builder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
@@ -99,9 +100,10 @@ public class TextResultPresenter implements TextResultContract.Presenter {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                Log.d(TAG, "onResponse: word");
+                String res = response.body().string();
+                Log.d(TAG, "onResponse: " + res);
                 Gson gson = new Gson();
-                WordResult result = gson.fromJson(response.body().string(), WordResult.class);
+                WordResult result = gson.fromJson(res, WordResult.class);
                 mTextResultView.refreshWords(result.getShowapi_res_body().getList());
             }
         });

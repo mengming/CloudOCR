@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.czm.cloudocr.R;
 import com.czm.cloudocr.util.SystemUtils;
@@ -30,6 +31,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     private Button mBtnLogin, mBtnRegister;
 
     private static final String TAG = "LoginActivity";
+    private boolean delay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,36 +123,55 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     }
 
     @Override
-    public void success(String message) {
-        mProgressDialog.setMessage(message);
-        mHandler.postDelayed(new Runnable() {
+    public void illegal(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void success(final String message) {
+        delay = true;
+        mHandler.post(new Runnable() {
             @Override
             public void run() {
-                mProgressDialog.dismiss();
-                Intent intent = new Intent();
-                String account = LoginActivity.this.getSharedPreferences("settings", MODE_PRIVATE).getString("account","");
-                Log.d(TAG, "run: account = " + account);
-                intent.putExtra("account", account);
-                setResult(0, intent);
-                finish();
+                if (delay) {
+                    mProgressDialog.setMessage(message);
+                    delay = false;
+                    mHandler.postDelayed(this, 1000);
+                } else {
+                    mProgressDialog.dismiss();
+                    Intent intent = new Intent();
+                    String account = LoginActivity.this.getSharedPreferences("settings", MODE_PRIVATE).getString("account","");
+                    Log.d(TAG, "run: account = " + account);
+                    intent.putExtra("account", account);
+                    setResult(0, intent);
+                    finish();
+                    mHandler.removeCallbacks(this);
+                }
             }
-        }, 1000);
+        });
     }
 
     @Override
     public void error(final String status, final String message) {
-        mProgressDialog.setMessage(message);
-        mHandler.postDelayed(new Runnable() {
+        delay = true;
+        mHandler.post(new Runnable() {
             @Override
             public void run() {
-                mProgressDialog.dismiss();
-                if (status.equals("PW")) {
-                    mPasswordInput.setError(message);
-                } else if (status.equals("NoUser")) {
-                    mAccountInput.setError(message);
+                if (delay) {
+                    mProgressDialog.setMessage(message);
+                    delay = false;
+                    mHandler.postDelayed(this, 1000);
+                } else {
+                    mProgressDialog.dismiss();
+                    if (status.equals("PW")) {
+                        mPasswordInput.setError(message);
+                    } else if (status.equals("NoUser")) {
+                        mAccountInput.setError(message);
+                    }
+                    mHandler.removeCallbacks(this);
                 }
             }
-        }, 1000);
+        });
     }
 
     @Override
@@ -182,4 +203,5 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
         setResult(0, intent);
         super.onBackPressed();
     }
+
 }
