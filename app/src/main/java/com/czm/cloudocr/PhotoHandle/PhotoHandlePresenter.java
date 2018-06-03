@@ -159,7 +159,7 @@ public class PhotoHandlePresenter implements PhotoHandleContract.Presenter {
     public void savePdf(Uri uri, String name) {
         try {
             createPdf(mContext.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)+"/" + name + ".pdf", uri.getPath());
-            mPhotoHandleView.openPdf(mContext.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)+"/test.pdf");
+            mPhotoHandleView.openPdf(mContext.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)+"/" + name + ".pdf");
         } catch (IOException e) {
             e.printStackTrace();
         } catch (DocumentException e) {

@@ -145,6 +145,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         return true;
                     case R.id.navigation_history:
                         mArrow.setVisibility(View.INVISIBLE);
+                        if (mPopup.isShowing()) mPopup.dismiss();
                         mTitle.setText("识别历史");
                         mTitle.setOnClickListener(null);
                         mArrow.setOnClickListener(null);
@@ -201,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void takePhoto(){
         File file = new File(getExternalFilesDir(Environment.DIRECTORY_DCIM)
-                + "/test.jpg");
+                + "/" + System.currentTimeMillis() + ".jpg");
         imageUri = FileProvider.getUriForFile(MainActivity.this,
                 "com.czm.cloudocr.provider", file);
 
