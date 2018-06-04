@@ -1,31 +1,42 @@
 package com.czm.cloudocr.model;
 
-public class SearchResult {
-    private String ObjUrl;
-    private String ThumbnailUrl;
-    private String fromUrl;
+import java.io.Serializable;
 
-    public String getObjUrl() {
-        return ObjUrl;
+public class SearchResult implements Serializable{
+    private String objURL;
+    private String thumbnailURL;
+    private String fromURL;
+
+    public String getObjURL() {
+        return objURL;
     }
 
-    public void setObjUrl(String objUrl) {
-        ObjUrl = objUrl;
+    public void setObjURL(String objURL) {
+        this.objURL = objURL;
     }
 
-    public String getThumbnailUrl() {
-        return ThumbnailUrl;
+    public String getThumbnailURL() {
+        return thumbnailURL;
     }
 
-    public void setThumbnailUrl(String thumbnailUrl) {
-        ThumbnailUrl = thumbnailUrl;
+    public void setThumbnailURL(String thumbnailURL) {
+        this.thumbnailURL = thumbnailURL;
     }
 
-    public String getFromUrl() {
-        return fromUrl;
+    public String getFromURL() {
+        return fromURL;
     }
 
-    public void setFromUrl(String fromUrl) {
-        this.fromUrl = fromUrl;
+    public void setFromURL(String fromURL) {
+        this.fromURL = fromURL;
+    }
+
+    @Override
+    public String toString() {
+        return "SearchResult{" +
+                "objURL='" + objURL + '\'' +
+                ", thumbnailURL='" + thumbnailURL + '\'' +
+                ", fromURL='" + fromURL + '\'' +
+                '}';
     }
 }

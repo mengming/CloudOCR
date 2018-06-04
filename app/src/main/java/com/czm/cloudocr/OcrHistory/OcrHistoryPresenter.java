@@ -26,7 +26,7 @@ public class OcrHistoryPresenter implements OcrHistoryContract.Presenter {
     public void loadHistory(Handler handler) {
         Message message = new Message();
         Bundle bundle = new Bundle();
-        bundle.putSerializable("results", (Serializable) DataSupport.findAll(PhotoResult.class));
+        bundle.putSerializable("results", (Serializable) DataSupport.order("id desc").find(PhotoResult.class));
         message.setData(bundle);
         handler.sendMessage(message);
     }

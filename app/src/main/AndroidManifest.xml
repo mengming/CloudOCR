@@ -42,7 +42,12 @@
         <activity android:name=".Login.LoginActivity" />
         <activity android:name=".Settings.SettingsActivity" />
         <activity android:name=".Translate.TranslateActivity" />
-        <activity android:name=".PhotoSearch.PhotoSearchActivity"></activity>
+        <activity android:name=".PhotoSearch.PhotoSearchActivity" />
+        <activity
+            android:name=".PhotoContent.PhotoContentActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_photo_content"
+            android:theme="@style/FullscreenTheme"></activity>
     </application>
 
 </manifest>

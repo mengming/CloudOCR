@@ -5,11 +5,13 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.czm.cloudocr.R;
 import com.czm.cloudocr.model.SearchResult;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PhotoSearchActivity extends AppCompatActivity {
@@ -17,14 +19,16 @@ public class PhotoSearchActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
 
     private PhotoSearchAdapter mAdapter;
-    private List<SearchResult> mSearchResults;
+    private List<SearchResult> mSearchResults = new ArrayList<>();
+    private static final String TAG = "PhotoSearchActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_search);
 
-        mSearchResults = (List<SearchResult>) getIntent().getSerializableExtra("search_results");
+        mSearchResults.addAll((List<SearchResult>) getIntent().getSerializableExtra("search_results"));
+        Log.d(TAG, "onCreate: size = " + mSearchResults.size());
 
         Toolbar toolbar = findViewById(R.id.photo_search_toolbar);
         setSupportActionBar(toolbar);

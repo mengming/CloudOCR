@@ -24,14 +24,18 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.czm.cloudocr.Login.LoginActivity;
 import com.czm.cloudocr.MainActivity;
+import com.czm.cloudocr.PhotoSearch.PhotoSearchActivity;
 import com.czm.cloudocr.R;
 import com.czm.cloudocr.TextResult.TextResultActivity;
 import com.czm.cloudocr.model.PhotoResult;
+import com.czm.cloudocr.model.SearchResult;
 import com.czm.cloudocr.util.SystemUtils;
 import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
+import java.util.List;
 
 import static com.czm.cloudocr.util.MyConstConfig.LOGIN;
 
@@ -72,6 +76,8 @@ public class PhotoHandleActivity extends AppCompatActivity implements View.OnCli
         btnOcr.setOnClickListener(this);
         Button btnPdf = findViewById(R.id.handle_pdf_btn);
         btnPdf.setOnClickListener(this);
+        Button btnSearch = findViewById(R.id.handle_search_btn);
+        btnSearch.setOnClickListener(this);
         tvOcr = findViewById(R.id.handle_ocr_text);
         if (flag) {
             btnOcr.setBackgroundResource(R.drawable.ic_text);
@@ -155,12 +161,19 @@ public class PhotoHandleActivity extends AppCompatActivity implements View.OnCli
             case R.id.handle_pdf_btn :
                 pdfDialog();
                 break;
+            case R.id.handle_search_btn:
+                try {
+                    mPresenter.searchPic(imgUri);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
         }
     }
 
     @Override
-    public void waiting() {
-        mProgressDialog = SystemUtils.waitingDialog(this, "正在识别中...");
+    public void waiting(String message) {
+        mProgressDialog = SystemUtils.waitingDialog(this, message);
         mProgressDialog.show();
     }
 
@@ -236,6 +249,28 @@ public class PhotoHandleActivity extends AppCompatActivity implements View.OnCli
             }
 
         }
+    }
+
+    @Override
+    public void showSearch(final List<SearchResult> list) {
+        delay = true;
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (delay) {
+                    mProgressDialog.setMessage("搜索成功");
+                    delay = false;
+                    mHandler.postDelayed(this, 1000);
+                } else {
+                    mProgressDialog.dismiss();
+                    Intent intent = new Intent(PhotoHandleActivity.this, PhotoSearchActivity.class);
+                    intent.putExtra("search_results", (Serializable) list);
+                    startActivity(intent);
+                    finish();
+                    mHandler.removeCallbacks(this);
+                }
+            }
+        });
     }
 
     @Override

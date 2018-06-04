@@ -4,10 +4,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="0dp"
-    tools:context=".PhotoHandle.PhotoHandleActivity">
+    tools:context=".PhotoContent.PhotoContentActivity">
 
     <ImageView
-        android:id="@+id/handle_iv"
+        android:id="@+id/search_content_iv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
@@ -24,7 +24,7 @@
             android:layout_gravity="top"
             android:layout_marginTop="20dp">
             <Button
-                android:id="@+id/handle_back_btn"
+                android:id="@+id/search_back_btn"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:background="@drawable/ic_back_white"
@@ -45,7 +45,7 @@
                 android:layout_margin="10dp"
                 android:orientation="vertical">
                 <Button
-                    android:id="@+id/handle_crop_btn"
+                    android:id="@+id/search_website_btn"
                     android:background="@drawable/ic_crop"
                     android:layout_gravity="center_horizontal"
                     android:layout_width="30dp"
@@ -56,7 +56,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="3dp"
-                    android:text="@string/handle_crop"
+                    android:text="@string/search_website"
                     android:textSize="10dp"
                     android:textColor="@color/white"/>
             </LinearLayout>
@@ -67,7 +67,7 @@
                 android:layout_margin="10dp"
                 android:orientation="vertical">
                 <Button
-                    android:id="@+id/handle_pdf_btn"
+                    android:id="@+id/search_download_btn"
                     android:background="@drawable/ic_pdf"
                     android:layout_gravity="center_horizontal"
                     android:layout_width="30dp"
@@ -78,56 +78,11 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="3dp"
-                    android:text="@string/handle_pdf"
+                    android:text="@string/search_download"
                     android:textSize="10dp"
                     android:textColor="@color/white"/>
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:orientation="vertical">
-                <Button
-                    android:id="@+id/handle_search_btn"
-                    android:background="@drawable/ic_ocr"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp" />
-
-                <TextView
-                    android:id="@+id/handle_search_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="3dp"
-                    android:text="@string/handle_search"
-                    android:textSize="10dp"
-                    android:textColor="@color/white"/>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:orientation="vertical">
-                <Button
-                    android:id="@+id/handle_ocr_btn"
-                    android:background="@drawable/ic_ocr"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp" />
-
-                <TextView
-                    android:id="@+id/handle_ocr_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="3dp"
-                    android:text="@string/handle_ocr"
-                    android:textSize="10dp"
-                    android:textColor="@color/white"/>
-            </LinearLayout>
         </LinearLayout>
     </FrameLayout>
 

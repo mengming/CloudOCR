@@ -1,14 +1,17 @@
 package com.czm.cloudocr.PhotoSearch;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.czm.cloudocr.PhotoContent.PhotoContentActivity;
 import com.czm.cloudocr.R;
 import com.czm.cloudocr.model.SearchResult;
 
@@ -32,14 +35,16 @@ public class PhotoSearchAdapter extends RecyclerView.Adapter<PhotoSearchAdapter.
     }
 
     @Override
-    public void onBindViewHolder(@NonNull PhotoSearchHolder holder, int position) {
+    public void onBindViewHolder(@NonNull PhotoSearchHolder holder, final int position) {
         Glide.with(mContext)
-                .load(mSearchResults.get(position).getThumbnailUrl())
+                .load(mSearchResults.get(position).getThumbnailURL())
                 .into(holder.mImageView);
         holder.mImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(mContext, PhotoContentActivity.class);
+                intent.putExtra("search_result", mSearchResults.get(position));
+                mContext.startActivity(intent);
             }
         });
     }

@@ -1,18 +1,23 @@
 package com.czm.cloudocr.PhotoHandle;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 
+import com.czm.cloudocr.PhotoSearch.PhotoSearchActivity;
 import com.czm.cloudocr.model.PhotoResult;
+import com.czm.cloudocr.model.SearchResult;
 import com.czm.cloudocr.util.MyConstConfig;
 import com.czm.cloudocr.util.PdfBackground;
 import com.czm.cloudocr.util.SystemUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
@@ -24,11 +29,15 @@ import com.itextpdf.text.pdf.PdfWriter;
 
 import org.litepal.crud.DataSupport;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
@@ -76,7 +85,7 @@ public class PhotoHandlePresenter implements PhotoHandleContract.Presenter {
     @Override
     public void sendPic(final Uri uri, boolean advanced) throws IOException{
         Log.d(TAG, "sendPic: advanced = " + advanced);
-        mPhotoHandleView.waiting();
+        mPhotoHandleView.waiting("正在识别中...");
         final File file = compressPic(uri);
         if (file == null) return;
         OkHttpClient client = new OkHttpClient.Builder()
@@ -153,6 +162,53 @@ public class PhotoHandlePresenter implements PhotoHandleContract.Presenter {
     public void savePic(PhotoResult result) {
         result.saveThrows();
         mPhotoHandleView.showText(result);
+    }
+
+    @Override
+    public void searchPic(Uri uri) throws IOException {
+        mPhotoHandleView.waiting("正在搜索中...");
+        File file = new File(mContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES),
+                mContext.getSharedPreferences("settings", MODE_PRIVATE).getString("account","")
+                        + "_"+ DataSupport.count(PhotoResult.class) + ".jpg");
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        InputStream is = mContext.getContentResolver().openInputStream(uri);
+        Bitmap bitmap = BitmapFactory.decodeStream(is);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        FileOutputStream fos = new FileOutputStream(file);
+        fos.write(baos.toByteArray());
+        fos.flush();
+        fos.close();
+        OkHttpClient client = new OkHttpClient();
+        MultipartBody.Builder builder = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("myFile", file.getName(),
+                        RequestBody.create(MediaType.parse("image/png"), file))
+                .addFormDataPart("username", mContext.getSharedPreferences("settings", MODE_PRIVATE).getString("account",""));
+        RequestBody requestBody = builder.build();
+        final Request request = new Request.Builder()
+                .url(MyConstConfig.SERVER_URL + "imgSearch")
+                .post(requestBody)
+                .build();
+        Call call = client.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                mPhotoHandleView.ocrError();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String res = response.body().string();
+                JsonObject bigObj = new JsonParser().parse(res).getAsJsonObject();
+                Gson gson = new Gson();
+                List<SearchResult> searchResults = new ArrayList<>();
+                for (int i = 0; i < 30; i++) {
+                    SearchResult result = gson.fromJson(bigObj.getAsJsonObject(String.valueOf(i+1)).toString(), SearchResult.class);
+                    searchResults.add(result);
+                }
+                mPhotoHandleView.showSearch(searchResults);
+            }
+        });
     }
 
     @Override
