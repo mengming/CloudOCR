@@ -51,7 +51,7 @@ public class OcrHistoryAdapter extends RecyclerView.Adapter<OcrHistoryAdapter.Hi
                 mContext.startActivity(intent);
             }
         });
-        if (result.getCloud()) {
+        if (result.getCloud() == 1) {
             holder.mCloudFlag.setVisibility(View.INVISIBLE);
         } else {
             holder.mCloudFlag.setVisibility(View.VISIBLE);

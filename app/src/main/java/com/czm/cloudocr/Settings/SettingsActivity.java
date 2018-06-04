@@ -64,6 +64,9 @@ public class SettingsActivity extends AppCompatActivity implements SettingsContr
         } else {
             accountText.setText(account);
         }
+        if (!getSharedPreferences("settings", MODE_PRIVATE).getBoolean("cloud", true)) {
+            cloudSwitch.setChecked(false);
+        }
 
         new SettingsPresenter(this, this);
     }

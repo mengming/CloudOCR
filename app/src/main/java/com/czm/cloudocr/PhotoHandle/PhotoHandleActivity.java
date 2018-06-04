@@ -9,11 +9,14 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.support.v4.content.FileProvider;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -59,6 +62,8 @@ public class PhotoHandleActivity extends AppCompatActivity implements View.OnCli
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams. FLAG_FULLSCREEN , WindowManager.LayoutParams. FLAG_FULLSCREEN);
         setContentView(R.layout.activity_photo_handle);
 
         mContentView = findViewById(R.id.handle_iv);
@@ -142,19 +147,12 @@ public class PhotoHandleActivity extends AppCompatActivity implements View.OnCli
                 if (flag) {
                     showText(mPhotoResult);
                 } else {
-                    if (getSharedPreferences("settings", MODE_PRIVATE).getString("account","").equals("")){
-                        Toast.makeText(this, "请先登录", Toast.LENGTH_SHORT).show();
-                        mHandler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                startActivityForResult(new Intent(PhotoHandleActivity.this, LoginActivity.class), LOGIN);
-                            }
-                        },1000);
-                    }
-                    try {
-                        mPresenter.sendPic(imgUri, advanced);
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    if (checkLogged()) {
+                        try {
+                            mPresenter.sendPic(imgUri, advanced);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
                 break;
@@ -162,10 +160,12 @@ public class PhotoHandleActivity extends AppCompatActivity implements View.OnCli
                 pdfDialog();
                 break;
             case R.id.handle_search_btn:
-                try {
-                    mPresenter.searchPic(imgUri);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if (checkLogged()) {
+                    try {
+                        mPresenter.searchPic(imgUri);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
                 break;
         }
@@ -290,5 +290,20 @@ public class PhotoHandleActivity extends AppCompatActivity implements View.OnCli
                     }
                 })
                 .create().show();
+    }
+
+    private boolean checkLogged(){
+        if (getSharedPreferences("settings", MODE_PRIVATE).getString("account","").equals("")){
+            Toast.makeText(this, "请先登录", Toast.LENGTH_SHORT).show();
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    startActivityForResult(new Intent(PhotoHandleActivity.this, LoginActivity.class), LOGIN);
+                }
+            },1000);
+            return false;
+        } else {
+            return true;
+        }
     }
 }

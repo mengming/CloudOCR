@@ -3,13 +3,10 @@ package com.czm.cloudocr.PhotoSelect;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,7 +46,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.ImageViewHol
     @NonNull
     @Override
     public ImageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.item_photo, parent, false);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.item_photo_select, parent, false);
         return new ImageViewHolder(view);
     }
 
@@ -90,7 +87,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.ImageViewHol
         ImageView mImageView;
         public ImageViewHolder(View itemView) {
             super(itemView);
-            mImageView = itemView.findViewById(R.id.img_item_photo);
+            mImageView = itemView.findViewById(R.id.photo_select_iv);
         }
 
     }

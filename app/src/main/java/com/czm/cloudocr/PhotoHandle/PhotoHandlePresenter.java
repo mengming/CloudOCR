@@ -69,8 +69,7 @@ public class PhotoHandlePresenter implements PhotoHandleContract.Presenter {
             InputStream is = mContext.getContentResolver().openInputStream(uri);
             Bitmap bitmap = BitmapFactory.decodeStream(is);
             File file = new File(mContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES),
-                    mContext.getSharedPreferences("settings", MODE_PRIVATE).getString("account","")
-                            + "_"+ DataSupport.count(PhotoResult.class) + ".jpg");
+                    "ocr" + "_"+ DataSupport.count(PhotoResult.class) + ".jpg");
             Log.d(TAG, "compressPic: uri=" + file.toURI().toString());
             SystemUtils.compressImage(bitmap, file);
             Log.d(TAG, "compress:" + DataSupport.count(PhotoResult.class));
@@ -149,7 +148,7 @@ public class PhotoHandlePresenter implements PhotoHandleContract.Presenter {
                     PhotoResult result = gson.fromJson(string, PhotoResult.class);
                     result.setUri(file.toURI().toString());
                     result.setRootUri(uri.toString());
-                    result.setCloud(true);
+                    result.setCloud(1);
                     savePic(result);
                     Log.d(TAG, "onResponse: " + result.toString());
                 }
@@ -168,8 +167,7 @@ public class PhotoHandlePresenter implements PhotoHandleContract.Presenter {
     public void searchPic(Uri uri) throws IOException {
         mPhotoHandleView.waiting("正在搜索中...");
         File file = new File(mContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES),
-                mContext.getSharedPreferences("settings", MODE_PRIVATE).getString("account","")
-                        + "_"+ DataSupport.count(PhotoResult.class) + ".jpg");
+                "search" + System.currentTimeMillis() + ".jpg");
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         InputStream is = mContext.getContentResolver().openInputStream(uri);
         Bitmap bitmap = BitmapFactory.decodeStream(is);
@@ -178,7 +176,8 @@ public class PhotoHandlePresenter implements PhotoHandleContract.Presenter {
         fos.write(baos.toByteArray());
         fos.flush();
         fos.close();
-        OkHttpClient client = new OkHttpClient();
+        OkHttpClient client = new OkHttpClient.Builder()
+                .readTimeout(20, TimeUnit.SECONDS).build();
         MultipartBody.Builder builder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("myFile", file.getName(),

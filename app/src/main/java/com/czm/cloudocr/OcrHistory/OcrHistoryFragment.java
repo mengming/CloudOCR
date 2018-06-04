@@ -68,6 +68,9 @@ public class OcrHistoryFragment extends Fragment implements OcrHistoryContract.V
         mPhotoResults.clear();
         mPhotoResults.addAll(results);
         mOcrHistoryAdapter.notifyDataSetChanged();
+        for (PhotoResult result : results) {
+            Log.d(TAG, "showHistory: result = " + result.toString());
+        }
     }
 
     @Override

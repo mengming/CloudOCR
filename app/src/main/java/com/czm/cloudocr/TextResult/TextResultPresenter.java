@@ -23,6 +23,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import static android.content.Context.MODE_PRIVATE;
+
 
 public class TextResultPresenter implements TextResultContract.Presenter {
 
@@ -41,42 +43,51 @@ public class TextResultPresenter implements TextResultContract.Presenter {
     @Override
     public void updateText(final String text, final String id) {
         mTextResultView.waiting();
-        JsonArray array = new JsonArray();
-        JsonObject object = new JsonObject();
-        object.addProperty("id", id);
-        object.addProperty("text", text);
-        array.add(object);
-        mClient = new OkHttpClient();
-        MultipartBody.Builder builder = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("UText", array.toString());
-        Request request = new Request.Builder()
-                .url(MyConstConfig.SERVER_URL + "TxtUpdate")
-                .post(builder.build())
-                .build();
-        Call call = mClient.newCall(request);
-        call.enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                mTextResultView.netError();
-                ContentValues values = new ContentValues();
-                values.put("text", text);
-                values.put("isCloud", false);
-                int localId = DataSupport.where("remoteId = ?", id).find(PhotoResult.class).get(0).getId();
-                DataSupport.update(PhotoResult.class, values, localId);
-            }
+        if (mContext.getSharedPreferences("settings", MODE_PRIVATE).getBoolean("cloud", true)) {
+            JsonArray array = new JsonArray();
+            JsonObject object = new JsonObject();
+            object.addProperty("id", id);
+            object.addProperty("text", text);
+            array.add(object);
+            mClient = new OkHttpClient();
+            MultipartBody.Builder builder = new MultipartBody.Builder()
+                    .setType(MultipartBody.FORM)
+                    .addFormDataPart("UText", array.toString());
+            Request request = new Request.Builder()
+                    .url(MyConstConfig.SERVER_URL + "TxtUpdate")
+                    .post(builder.build())
+                    .build();
+            Call call = mClient.newCall(request);
+            call.enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    mTextResultView.netError();
+                    ContentValues values = new ContentValues();
+                    values.put("text", text);
+                    values.put("isCloud", 0);
+                    int localId = DataSupport.where("remoteId = ?", id).find(PhotoResult.class).get(0).getId();
+                    DataSupport.update(PhotoResult.class, values, localId);
+                }
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                Log.d(TAG, "onResponse: " + response.body().string());
-                mTextResultView.updated();
-                ContentValues values = new ContentValues();
-                values.put("text", text);
-                values.put("isCloud", true);
-                int localId = DataSupport.where("remoteId = ?", id).find(PhotoResult.class).get(0).getId();
-                DataSupport.update(PhotoResult.class, values, localId);
-            }
-        });
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    Log.d(TAG, "onResponse: " + response.body().string());
+                    mTextResultView.updated();
+                    ContentValues values = new ContentValues();
+                    values.put("text", text);
+                    values.put("isCloud", 1);
+                    int localId = DataSupport.where("remoteId = ?", id).find(PhotoResult.class).get(0).getId();
+                    DataSupport.update(PhotoResult.class, values, localId);
+                }
+            });
+        } else {
+            ContentValues values = new ContentValues();
+            values.put("text", text);
+            values.put("isCloud", 0);
+            int localId = DataSupport.where("remoteId = ?", id).find(PhotoResult.class).get(0).getId();
+            DataSupport.update(PhotoResult.class, values, localId);
+            mTextResultView.netError();
+        }
     }
 
     @Override

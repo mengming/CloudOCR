@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +29,7 @@ public class PhotoSearchAdapter extends RecyclerView.Adapter<PhotoSearchAdapter.
     @NonNull
     @Override
     public PhotoSearchHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.item_photo, parent, false);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.item_photo_search, parent, false);
         return new PhotoSearchHolder(view);
     }
 
@@ -58,7 +57,7 @@ public class PhotoSearchAdapter extends RecyclerView.Adapter<PhotoSearchAdapter.
         ImageView mImageView;
         public PhotoSearchHolder(View itemView) {
             super(itemView);
-            mImageView = itemView.findViewById(R.id.img_item_photo);
+            mImageView = itemView.findViewById(R.id.photo_search_iv);
         }
     }
 }

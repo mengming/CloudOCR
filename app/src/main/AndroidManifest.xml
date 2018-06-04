@@ -32,9 +32,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".PhotoHandle.PhotoHandleActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:theme="@style/FullscreenTheme" />
+            android:name=".PhotoHandle.PhotoHandleActivity" />
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" />
@@ -43,11 +41,7 @@
         <activity android:name=".Settings.SettingsActivity" />
         <activity android:name=".Translate.TranslateActivity" />
         <activity android:name=".PhotoSearch.PhotoSearchActivity" />
-        <activity
-            android:name=".PhotoContent.PhotoContentActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_photo_content"
-            android:theme="@style/FullscreenTheme"></activity>
+        <activity android:name=".PhotoContent.PhotoContentActivity"/>
     </application>
 
 </manifest>

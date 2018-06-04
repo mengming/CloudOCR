@@ -20,7 +20,6 @@ public class PhotoSearchActivity extends AppCompatActivity {
 
     private PhotoSearchAdapter mAdapter;
     private List<SearchResult> mSearchResults = new ArrayList<>();
-    private static final String TAG = "PhotoSearchActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,12 +27,11 @@ public class PhotoSearchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_photo_search);
 
         mSearchResults.addAll((List<SearchResult>) getIntent().getSerializableExtra("search_results"));
-        Log.d(TAG, "onCreate: size = " + mSearchResults.size());
 
         Toolbar toolbar = findViewById(R.id.photo_search_toolbar);
+        toolbar.setTitle("相似图片");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.setTitle("相似图片");
 
         mRecyclerView = findViewById(R.id.photo_search_recycler);
         GridLayoutManager manager = new GridLayoutManager(this, 2);

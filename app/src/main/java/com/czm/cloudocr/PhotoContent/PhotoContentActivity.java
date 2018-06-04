@@ -1,11 +1,15 @@
 package com.czm.cloudocr.PhotoContent;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -13,16 +17,23 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.czm.cloudocr.R;
 import com.czm.cloudocr.model.SearchResult;
+import com.czm.cloudocr.util.SystemUtils;
 
 import java.io.FileNotFoundException;
 
 public class PhotoContentActivity extends AppCompatActivity implements View.OnClickListener, PhotoContentContract.View{
 
+    private ProgressDialog mProgressDialog;
     private SearchResult mSearchResult;
+    private PhotoContentContract.Presenter mPresenter;
+    private boolean delay;
+    private Handler mHandler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams. FLAG_FULLSCREEN , WindowManager.LayoutParams. FLAG_FULLSCREEN);
         setContentView(R.layout.activity_photo_content);
 
         mSearchResult = (SearchResult) getIntent().getSerializableExtra("search_result");
@@ -37,6 +48,8 @@ public class PhotoContentActivity extends AppCompatActivity implements View.OnCl
         Glide.with(this)
                 .load(mSearchResult.getObjURL())
                 .into(imageView);
+
+        new PhotoContentPresenter(this, this);
     }
 
     @Override
@@ -61,6 +74,7 @@ public class PhotoContentActivity extends AppCompatActivity implements View.OnCl
                 finish();
                 break;
             case R.id.search_download_btn:
+                mPresenter.download(mSearchResult.getObjURL());
                 break;
             case R.id.search_website_btn:
                 Intent intent= new Intent();
@@ -74,21 +88,48 @@ public class PhotoContentActivity extends AppCompatActivity implements View.OnCl
 
     @Override
     public void waiting() {
-
+        mProgressDialog = SystemUtils.waitingDialog(this, "正在下载...");
+        mProgressDialog.show();
     }
 
     @Override
     public void success() {
-
+        delay = true;
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (delay) {
+                    mProgressDialog.setMessage("下载原图完成");
+                    delay = false;
+                    mHandler.postDelayed(this, 1000);
+                } else {
+                    mProgressDialog.dismiss();
+                    mHandler.removeCallbacks(this);
+                }
+            }
+        });
     }
 
     @Override
     public void error() {
-
+        delay = true;
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (delay) {
+                    mProgressDialog.setMessage("下载失败，请检查网络连接或重试");
+                    delay = false;
+                    mHandler.postDelayed(this, 1000);
+                } else {
+                    mProgressDialog.dismiss();
+                    mHandler.removeCallbacks(this);
+                }
+            }
+        });
     }
 
     @Override
     public void setPresenter(PhotoContentContract.Presenter presenter) {
-
+        mPresenter = presenter;
     }
 }

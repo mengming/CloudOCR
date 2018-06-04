@@ -47,7 +47,8 @@ public class SettingsPresenter implements SettingsContract.Presenter {
     @Override
     public void uploadAll() {
         mSettingsView.waiting("正在上传中...");
-        List<PhotoResult> results = DataSupport.where("isCloud = ?", "false").find(PhotoResult.class);
+        List<PhotoResult> results = DataSupport.where("isCloud = ?", "0").find(PhotoResult.class);
+        Log.d(TAG, "uploadAll: size = " + results.size());
         if (results.size() == 0) {
             mSettingsView.success();
             return;
@@ -77,8 +78,8 @@ public class SettingsPresenter implements SettingsContract.Presenter {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 ContentValues values = new ContentValues();
-                values.put("isCloud", true);
-                DataSupport.updateAll(PhotoResult.class, values, "isCloud = ?", "false");
+                values.put("isCloud", 1);
+                DataSupport.updateAll(PhotoResult.class, values, "isCloud = ?", "0");
                 mSettingsView.success();
             }
         });
@@ -155,7 +156,7 @@ public class SettingsPresenter implements SettingsContract.Presenter {
                         file.toURI().toString(),
                         historyResult.getImgText(),
                         historyResult.getDate(),
-                        true);
+                        1);
                 result.saveThrows();
                 downloadCount++;
                 if (downloadCount == mHistoryResults.size()) {

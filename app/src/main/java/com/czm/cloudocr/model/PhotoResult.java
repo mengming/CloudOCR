@@ -15,12 +15,12 @@ public class PhotoResult extends DataSupport implements Serializable{
     private String text;
     private String date;
 
-    private Boolean isCloud;
+    private int isCloud;
 
     public PhotoResult() {
     }
 
-    public PhotoResult(String remoteId, String uri, String rootUri, String text, String date, Boolean isCloud) {
+    public PhotoResult(String remoteId, String uri, String rootUri, String text, String date, int isCloud) {
         this.remoteId = remoteId;
         this.uri = uri;
         this.rootUri = rootUri;
@@ -77,11 +77,11 @@ public class PhotoResult extends DataSupport implements Serializable{
         this.date = date;
     }
 
-    public Boolean getCloud() {
+    public int getCloud() {
         return isCloud;
     }
 
-    public void setCloud(Boolean cloud) {
+    public void setCloud(int cloud) {
         isCloud = cloud;
     }
 
